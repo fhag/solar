@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>function send_status &#8212; Solar 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="class ChargeModbus" href="chargemodbus.html" />
+    <link rel="prev" title="class Car" href="car.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="chargemodbus.html" title="class ChargeModbus"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="car.html" title="class Car"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Solar 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="function-send-status">
+<span id="send-status"></span><h1><em>function</em> send_status<a class="headerlink" href="#function-send-status" title="Permalink to this headline">¶</a></h1>
+<p>This function as attached as method to <em>class</em> <a class="reference internal" href="car.html#car"><span class="std std-ref">class Car</span></a> at initialization.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Correct configuration for emails must be set in
+<strong>solar.definitions.send_status_access.py</strong>.
+No email notification is sent if settings are incorrect of file is  missing.</p>
+</div>
+<hr class="docutils" />
+<div class="toctree-wrapper compound">
+</div>
+<span class="target" id="module-solar.send_status"></span><p>Function to send emails about the status or errors to user.</p>
+<ul class="simple">
+<li><p>from_addr = <a class="reference external" href="mailto:'carnotification&#37;&#52;&#48;mymail&#46;com">‘carnotification<span>&#64;</span>mymail<span>&#46;</span>com</a>’</p></li>
+<li><p>from_name = ‘Raspberry’</p></li>
+<li><p>from_password = ‘notificationpassword’</p></li>
+<li><p>to_addrs = <a class="reference external" href="mailto:'user&#37;&#52;&#48;domain&#46;com">‘user<span>&#64;</span>domain<span>&#46;</span>com</a>’</p></li>
+<li><p>signature = ‘Mail from Raspberry’</p></li>
+</ul>
+<p># other values depending on mail server</p>
+<ul class="simple">
+<li><p>port = 587</p></li>
+<li><p>smtp_server = ‘smtp.gmail.com’</p></li>
+</ul>
+<dl class="function">
+<dt id="solar.send_status.send_status">
+<code class="sig-prename descclassname">solar.send_status.</code><code class="sig-name descname">send_status</code><span class="sig-paren">(</span><em class="sig-param">msgstr: str</em>, <em class="sig-param">subject: str = None</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/solar/send_status.html#send_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solar.send_status.send_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>send <strong>msgstr</strong> (with <strong>subject</strong>) to <strong>to_addrs</strong></p>
+</dd></dl>
+
+<hr class="docutils" />
+<p><a class="reference internal" href="../index.html#home"><span class="std std-ref">Solar - Home</span></a></p>
+<p><a class="reference internal" href="../genindex.html"><span class="std std-ref">Index</span></a></p>
+<p><a class="reference internal" href="../py-modindex.html"><span class="std std-ref">Module Index</span></a></p>
+<p><a class="reference internal" href="../search.html"><span class="std std-ref">Search Page</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="car.html"
+                        title="previous chapter"><em>class</em> Car</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="chargemodbus.html"
+                        title="next chapter"><em>class</em> ChargeModbus</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/docs/send_status.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="chargemodbus.html" title="class ChargeModbus"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="car.html" title="class Car"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Solar 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, GFI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

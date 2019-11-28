@@ -1,0 +1,460 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>solar.car &#8212; Solar 1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Solar 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for solar.car</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#  This program is free software; you can redistribute it and/or modify</span>
+<span class="c1">#  it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#  the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c1">#  (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#  This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#  but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#  GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#  You should have received a copy of the GNU General Public License</span>
+<span class="c1">#  along with this program; if not, write to the Free Software</span>
+<span class="c1">#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,</span>
+<span class="c1">#  MA 02110-1301, USA.</span>
+<span class="c1">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">*class* Car contains all Tesla car data and methods to access car</span>
+<span class="sd">Methods for self.func are imported from *class* Vehicle in module</span>
+<span class="sd">teslaapiclient.teslavehicle</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">solar.teslaapi</span> <span class="k">import</span> <span class="n">TeslaApiClient</span><span class="p">,</span> <span class="n">AuthenticationError</span><span class="p">,</span> <span class="n">ApiError</span>
+<span class="kn">from</span> <span class="nn">solar.definitions.pvdataclasses</span> <span class="k">import</span> <span class="n">CarData</span>
+<span class="kn">from</span> <span class="nn">solar.definitions.access_data</span> <span class="k">import</span> <span class="n">EMAIL</span><span class="p">,</span> <span class="n">PW</span><span class="p">,</span> <span class="n">VIN</span><span class="p">,</span> <span class="n">HOME</span>
+<span class="kn">from</span> <span class="nn">solar.send_status</span> <span class="k">import</span> <span class="n">send_status</span>
+
+<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;0.1.55&#39;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;car v</span><span class="si">{__version__}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Car"><a class="viewcode-back" href="../../docs/car.html#solar.car.Car">[docs]</a><span class="k">class</span> <span class="nc">Car</span><span class="p">(</span><span class="n">CarData</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Dataclass containing all Tesla car status and data collected from vehicle</span>
+
+<span class="sd">    * methods to collect data, update data and start and stop charging</span>
+<span class="sd">    * checks credentials and correct vin at startup</span>
+<span class="sd">    * home = (latitude, longitude) of car&#39;s home location</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">pw</span><span class="p">,</span> <span class="n">vin</span><span class="p">,</span> <span class="n">home</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">home</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__version__</span> <span class="o">=</span> <span class="n">__version__</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;car.py v</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">__version__</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">TeslaApiClient</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">pw</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vehicles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">list_vehicles</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicles</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">vin</span> <span class="o">==</span> <span class="n">vin</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_status</span> <span class="o">=</span> <span class="n">send_status</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_charging_status</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">ftext</span> <span class="o">=</span> <span class="s1">&#39;Unknown car with VIN:</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">vin</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">ftext</span><span class="p">)</span>
+            <span class="n">send_status</span><span class="p">(</span><span class="n">ftext</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">AuthenticationError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            <span class="n">send_status</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ftext</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39; Car v</span><span class="si">{__version__}</span><span class="s1"> for </span><span class="si">{vin}</span><span class="s1"> initialized and started &#39;</span>
+            <span class="n">ftext</span> <span class="o">=</span> <span class="n">ftext</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">ftext</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">ftext</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_km_from_home</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the Haversine distance.</span>
+<span class="sd">        * origin : tuple of float (lat, long)</span>
+<span class="sd">        * destination : tuple of float (lat, long)</span>
+<span class="sd">        * -&gt; distance_in_km : float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lat1</span><span class="p">,</span> <span class="n">lon1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span>
+        <span class="n">lat2</span><span class="p">,</span> <span class="n">lon2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">home</span>
+        <span class="n">radius</span> <span class="o">=</span> <span class="mi">6371</span>  <span class="c1"># m</span>
+        <span class="n">dlat</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">lat2</span> <span class="o">-</span> <span class="n">lat1</span><span class="p">)</span>
+        <span class="n">dlon</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">lon2</span> <span class="o">-</span> <span class="n">lon1</span><span class="p">)</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">dlat</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">dlat</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span>
+                 <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">lat1</span><span class="p">))</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">lat2</span><span class="p">))</span> <span class="o">*</span>
+                 <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">dlon</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">dlon</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">charlie</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">alpha</span><span class="p">),</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">charlie</span>
+
+    <span class="k">def</span> <span class="nf">_km_to_seconds</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;Transform distance into waittime&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_km_from_home</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_km2seconds_factor</span>
+
+<div class="viewcode-block" id="Car.current_power_start_stop"><a class="viewcode-back" href="../../docs/car.html#solar.car.Car.current_power_start_stop">[docs]</a>    <span class="k">def</span> <span class="nf">current_power_start_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get current start and stop power limits depending on car charging</span>
+<span class="sd">        level. Levels are defined in *cardefaults.json*</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_level</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">evsoc_limit_low</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">evstart_power_low</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">evstop_power_low</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">evstart_power_high</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">evstop_power_high</span></div>
+
+<div class="viewcode-block" id="Car.athome"><a class="viewcode-back" href="../../docs/car.html#solar.car.Car.athome">[docs]</a>    <span class="k">def</span> <span class="nf">athome</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;Return True if car is at home&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_km_from_home</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_athome_km</span></div>
+
+    <span class="k">def</span> <span class="nf">_try_start_charging</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;start_until car online&#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ev_trials</span><span class="p">):</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">start_charging</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;result&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;reason&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;charging&#39;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sleep_between_func</span><span class="p">)</span>
+        <span class="n">ftext</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;Could not start_charging car: </span><span class="si">{response}</span><span class="s1">&#39;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">ftext</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_try_stop_charging</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;stop_charging until car online&#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ev_trials</span><span class="p">):</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">stop_charging</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;result&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;reason&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;not_charging&#39;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sleep_between_func</span><span class="p">)</span>
+        <span class="n">ftext</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;Could not stop_charging: </span><span class="si">{response}</span><span class="s1">&#39;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">ftext</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_try_set_charge_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">charge_limit</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;remember old limit and set new limit with exception handling&#39;&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_charge_limit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">charge_limit</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">_charge_limit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evsoc_std</span>
+        <span class="n">_charge_limit</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge_limit_soc_max</span><span class="p">,</span> <span class="n">_charge_limit</span><span class="p">)</span>
+        <span class="n">_charge_limit</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">_charge_limit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">charge_limit_soc_min</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ev_trials</span><span class="p">):</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">set_charge_limit</span><span class="p">(</span><span class="n">_charge_limit</span><span class="p">)</span>
+                <span class="n">condition</span> <span class="o">=</span> <span class="nb">any</span><span class="p">([</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;result&#39;</span><span class="p">],</span>
+                                 <span class="s1">&#39;already&#39;</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;reason&#39;</span><span class="p">]])</span>
+                <span class="k">if</span> <span class="n">condition</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;New soc limit=</span><span class="si">%s</span><span class="s1">   -&gt; </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">_charge_limit</span><span class="p">,</span>
+                                 <span class="n">response</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_reset_timestamp</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sleep_between_func</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">AssertionError</span><span class="p">,</span> <span class="n">ApiError</span><span class="p">,</span>
+                <span class="n">AuthenticationError</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ftext</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;NOT successful: </span><span class="si">{response}</span><span class="s1">&#39;</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">ftext</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_try_wake_up</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;wake up car until car online&#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ev_trials</span><span class="p">):</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">wake_up</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;ASLEEP&#39;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">response</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sleep_between_func</span><span class="p">)</span>
+        <span class="n">ftext</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;Could not wake up car: </span><span class="si">{response}</span><span class="s1">&#39;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">ftext</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Car.update_car"><a class="viewcode-back" href="../../docs/car.html#solar.car.Car.update_car">[docs]</a>    <span class="k">def</span> <span class="nf">update_car</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;Update car instance with all car data and timestamp&#39;&#39;&#39;</span>
+        <span class="n">timestamps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">attempt</span> <span class="o">=</span> <span class="s1">&#39;wake_up&#39;</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_try_wake_up</span><span class="p">()</span>
+            <span class="n">attempt</span> <span class="o">=</span> <span class="s1">&#39;get_charge_state&#39;</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">get_charge_state</span><span class="p">())</span>
+            <span class="n">timestamps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">])</span>
+            <span class="n">attempt</span> <span class="o">=</span> <span class="s1">&#39;get_drive_state&#39;</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">get_drive_state</span><span class="p">())</span>
+            <span class="n">timestamps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">])</span>
+            <span class="n">attempt</span> <span class="o">=</span> <span class="s1">&#39;get_climate_state&#39;</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">get_climate_state</span><span class="p">())</span>
+            <span class="n">timestamps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">])</span>
+            <span class="n">attempt</span> <span class="o">=</span> <span class="s1">&#39;get_vehicle_state&#39;</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">get_vehicle_state</span><span class="p">())</span>
+            <span class="n">timestamps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">])</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">data_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">timestamp</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">timestamps</span><span class="p">)</span><span class="o">/</span><span class="mi">1000</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>  <span class="c1"># for debugging</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Car data successfully updated:</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">ApiError</span><span class="p">,</span> <span class="n">AuthenticationError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">ftext</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;Unable to get car_state due to=</span><span class="si">{err}</span><span class="s1"> for </span><span class="si">{attempt!r}</span><span class="s1">&#39;</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> |</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">ftext</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">data_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">ftext</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;Unexpected Exception due to=</span><span class="si">{err}</span><span class="s1"> for </span><span class="si">{attempt!r}</span><span class="s1">&#39;</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> |</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">ftext</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">data_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Car.update_car_if"><a class="viewcode-back" href="../../docs/car.html#solar.car.Car.update_car_if">[docs]</a>    <span class="k">def</span> <span class="nf">update_car_if</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Conditional update of car instance with all car data  and timestamp if:</span>
+
+<span class="sd">        * car is driving or</span>
+
+<span class="sd">        * car is close enough and last recent update is old enough</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">elapsed_seconds</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span>
+        <span class="n">not_driving</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shift_state</span> <span class="o">!=</span> <span class="s1">&#39;D&#39;</span>
+        <span class="n">ftext</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;shift_state=</span><span class="si">%s</span><span class="s1">, !driving=</span><span class="si">%s</span><span class="s1">, battery_level=</span><span class="si">%2.0f</span><span class="s1">&#39;</span> <span class="o">%</span>
+                 <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shift_state</span><span class="p">,</span> <span class="n">not_driving</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_level</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">elapsed_seconds</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_km_to_seconds</span><span class="p">()</span> <span class="ow">and</span> <span class="n">not_driving</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Car too far away: </span><span class="si">%.1f</span><span class="s1"> sec, elapsed=</span><span class="si">%.1f</span><span class="s1"> sec| </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">_km_to_seconds</span><span class="p">(),</span> <span class="n">elapsed_seconds</span><span class="p">,</span> <span class="n">ftext</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">elapsed_seconds</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">seconds_btw_updates</span> <span class="ow">and</span> <span class="n">not_driving</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Last update too recent:</span><span class="si">%5.0f</span><span class="s1"> sec vs. </span><span class="si">%6.0f</span><span class="s1"> sec| </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">seconds_btw_updates</span><span class="p">,</span> <span class="n">elapsed_seconds</span><span class="p">,</span> <span class="n">ftext</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Before update_car:  </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">ftext</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_car</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_ok</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Update_car successful: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">ftext</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Update_car failed: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">ftext</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+    <span class="k">def</span> <span class="nf">_charging_needed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;True if charging needed&#39;&#39;&#39;</span>
+        <span class="n">fully_charged</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evsoc_limit_high</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">charge_limit_soc</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_level</span> <span class="o">&lt;</span> <span class="n">fully_charged</span>
+
+    <span class="k">def</span> <span class="nf">_get_new_soc_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;return new soc limit to set&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge_limit_soc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">evsoc_limit_high</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_save_charging_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;save charging flag status to file&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fname_charging_status</span><span class="p">):</span>
+            <span class="n">new_file</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;New file  :</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fname_charging_status</span><span class="p">)</span>
+            <span class="n">new_file</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">savedict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">Zeit</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">())</span>
+        <span class="n">savedict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">charging_flag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">charging_flag</span><span class="p">))</span>
+        <span class="n">savedict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">last_charge_limit_soc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">last_charge_limit_soc</span><span class="p">))</span>
+        <span class="n">savedict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fname_charging_status</span><span class="p">,</span> <span class="s1">&#39;a+&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+                <span class="n">colnames</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">savedict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+                <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictWriter</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">fieldnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">,</span>
+                                        <span class="n">dialect</span><span class="o">=</span><span class="s1">&#39;excel&#39;</span><span class="p">,</span>
+                                        <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">new_file</span><span class="p">:</span>
+                    <span class="n">writer</span><span class="o">.</span><span class="n">writeheader</span><span class="p">()</span>
+                <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">savedict</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">PermissionError</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">ftext</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;Could not save charging_status: </span><span class="si">{err}</span><span class="s1">&#39;</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">ftext</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_status</span><span class="p">(</span><span class="n">ftext</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_charging_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;get charging_flag status from file&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fname_charging_status</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">charging_flag</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_charge_limit_soc</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fname_charging_status</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+                <span class="n">reader</span> <span class="o">=</span> <span class="n">csvfile</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">reader</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">line</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">charging_flag</span> <span class="o">=</span> <span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;True&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_charge_limit_soc</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">PermissionError</span><span class="p">,</span> <span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">ftext</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;Missing file </span><span class="si">{self.fname_charging_status}</span><span class="s1">&#39;</span>
+            <span class="n">ftext</span> <span class="o">+=</span> <span class="n">f</span><span class="s1">&#39; </span><span class="se">\n</span><span class="s1">Could not get charging_status: </span><span class="si">{err}</span><span class="s1">&#39;</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">ftext</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_status</span><span class="p">(</span><span class="n">ftext</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_start_car_charging</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;start charging car with exception handling&#39;&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_try_wake_up</span><span class="p">()</span>
+            <span class="n">last_charge_limit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">charge_limit_soc</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_charge_limit_soc</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_try_set_charge_limit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_new_soc_limit</span><span class="p">()):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">last_charge_limit_soc</span> <span class="o">=</span> <span class="n">last_charge_limit</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">charging_flag</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_try_start_charging</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">response</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">charging_flag</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_save_charging_status</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_reset_timestamp</span><span class="p">()</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Car charging started:</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">AssertionError</span><span class="p">,</span> <span class="n">ApiError</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">except</span> <span class="n">AuthenticationError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n\n</span><span class="s1">self._start_car_charging in car.py v</span><span class="si">{}</span><span class="s1">&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_status</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">__version__</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">AuthenticationError</span><span class="p">(</span><span class="s1">&#39;Please check credentials for car login&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Assertion: unable to start charging&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_stop_car_charging</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;stop charging car with exception handling&#39;&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_try_wake_up</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_charge_limit_soc</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">new_limit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_charge_limit_soc</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_try_set_charge_limit</span><span class="p">(</span><span class="n">new_limit</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">last_charge_limit_soc</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">charging_flag</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_try_stop_charging</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">charging_flag</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_save_charging_status</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_reset_timestamp</span><span class="p">()</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Car charging stopped&#39;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">AssertionError</span><span class="p">,</span> <span class="n">ApiError</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">except</span> <span class="n">AuthenticationError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n\n</span><span class="s1">self._start_car_charging in car.py v</span><span class="si">{}</span><span class="s1">&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_status</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">__version__</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">AuthenticationError</span><span class="p">(</span><span class="s1">&#39;Please check credentials for car login&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Unable or unnecessary to stop car_charging&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_reset_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;reset timestamp to trigger self.car_update() on next call&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seconds_btw_updates</span>
+
+<div class="viewcode-block" id="Car.start_charging"><a class="viewcode-back" href="../../docs/car.html#solar.car.Car.start_charging">[docs]</a>    <span class="k">def</span> <span class="nf">start_charging</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Start charging car if all conditions are met and set *charging_flag*</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_car_if</span><span class="p">()</span>
+        <span class="n">conditions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">conditions</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">data_ok</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_ok</span><span class="p">))</span>
+        <span class="n">conditions</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">athome</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">athome</span><span class="p">()))</span>
+        <span class="n">conditions</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="nb">dict</span><span class="p">(</span><span class="n">charge_port</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge_port_latch</span> <span class="o">==</span> <span class="s1">&#39;Engaged&#39;</span><span class="p">)))</span>
+        <span class="n">conditions</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">charging_needed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_charging_needed</span><span class="p">()))</span>
+        <span class="n">ftext</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;conditions: </span><span class="si">{conditions}</span><span class="s1"> | &#39;</span>
+        <span class="n">ftext</span> <span class="o">+=</span> <span class="n">f</span><span class="s1">&#39;charging_flag: </span><span class="si">{self.charging_flag}</span><span class="s1">&#39;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">ftext</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">conditions</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">charging_flag</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>  <span class="c1"># do nothing - already charging</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_car_charging</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_charging</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="Car.stop_charging"><a class="viewcode-back" href="../../docs/car.html#solar.car.Car.stop_charging">[docs]</a>    <span class="k">def</span> <span class="nf">stop_charging</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Stop charging car if *charging_flag* set - else no wake up!&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_level</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;battery level is 0 --&gt; force update_car&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_car</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">charging_flag</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_charge_limit_soc</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stop_car_charging</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">False</span>   <span class="c1"># do nothing</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">car</span> <span class="o">=</span> <span class="n">Car</span><span class="p">(</span><span class="n">EMAIL</span><span class="p">,</span> <span class="n">PW</span><span class="p">,</span> <span class="n">VIN</span><span class="p">,</span> <span class="n">HOME</span><span class="p">)</span>  <span class="c1"># car.update_car_if()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Solar 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, GFI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

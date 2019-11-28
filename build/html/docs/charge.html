@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>class ChargeEV &#8212; Solar 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="class Car" href="car.html" />
+    <link rel="prev" title="Configuration" href="configuration.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="car.html" title="class Car"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Solar 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="class-chargeev">
+<span id="chargeev"></span><h1><em>class</em> ChargeEV<a class="headerlink" href="#class-chargeev" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<span class="target" id="module-solar.charge"></span><p>This module collects data from E3DC System via Modbus-Interface.
+If conditions to possibly start charging the car, <em>car.start_charging</em>
+is called. In any other case car.*stop_charging* is called.</p>
+<p>Data is collected from E3DC every minute (_sleep_time).</p>
+<p>The key data collected are:</p>
+<ul class="simple">
+<li><p>SOC of housebattery</p></li>
+</ul>
+<p>The conditions to start charging the car are:</p>
+<ul class="simple">
+<li><p>the data could be read from E3DC (no transmission error)</p></li>
+<li><p>power delivered to network larger than evsoc_minimum</p></li>
+<li><p>the minimum state of charge (SOC) of the housebattery overstepped</p></li>
+</ul>
+<p>In order to avoid excessive switching the conditions must be stable for
+5 minutes</p>
+<dl class="class">
+<dt id="solar.charge.ChargeEV">
+<em class="property">class </em><code class="sig-prename descclassname">solar.charge.</code><code class="sig-name descname">ChargeEV</code><a class="reference internal" href="../_modules/solar/charge.html#ChargeEV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solar.charge.ChargeEV" title="Permalink to this definition">¶</a></dt>
+<dd><p>class for charging with PV power</p>
+<dl class="method">
+<dt id="solar.charge.ChargeEV.get_new_values">
+<code class="sig-name descname">get_new_values</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; solar.definitions.pvdataclasses.PVStatus<a class="reference internal" href="../_modules/solar/charge.html#ChargeEV.get_new_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solar.charge.ChargeEV.get_new_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return new values from E3DC system collected via modbus interface</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="solar.charge.ChargeEV.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/solar/charge.html#ChargeEV.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solar.charge.ChargeEV.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start application and loop checking state of photovoltaic system.
+Initiates start/stop charging if conditions are met.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="solar.charge.ChargeEV.save_to_csv">
+<code class="sig-name descname">save_to_csv</code><span class="sig-paren">(</span><em class="sig-param">dict2save: dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/solar/charge.html#ChargeEV.save_to_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solar.charge.ChargeEV.save_to_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append all collected data from E3DC to a CSV file</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>self.run starts application</p>
+</div>
+<hr class="docutils" />
+<p><a class="reference internal" href="../index.html#home"><span class="std std-ref">Solar - Home</span></a></p>
+<p><a class="reference internal" href="../genindex.html"><span class="std std-ref">Index</span></a></p>
+<p><a class="reference internal" href="../py-modindex.html"><span class="std std-ref">Module Index</span></a></p>
+<p><a class="reference internal" href="../search.html"><span class="std std-ref">Search Page</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="configuration.html"
+                        title="previous chapter">Configuration</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="car.html"
+                        title="next chapter"><em>class</em> Car</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/docs/charge.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="car.html" title="class Car"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Solar 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, GFI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

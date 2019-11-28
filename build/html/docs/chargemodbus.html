@@ -1,0 +1,146 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>class ChargeModbus &#8212; Solar 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="class Car and class Vehicle" href="teslaapiclient.html" />
+    <link rel="prev" title="function send_status" href="send_status.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="teslaapiclient.html" title="class Car and class Vehicle"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="send_status.html" title="function send_status"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Solar 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="class-chargemodbus">
+<span id="chargemodbus"></span><h1><em>class</em> ChargeModbus<a class="headerlink" href="#class-chargemodbus" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<span class="target" id="module-solar.chargemodbus"></span><p>Class ChargeModbus with methods to collect and prepare data
+from E3DC modbus interface</p>
+<dl class="class">
+<dt id="solar.chargemodbus.ChargeModbus">
+<em class="property">class </em><code class="sig-prename descclassname">solar.chargemodbus.</code><code class="sig-name descname">ChargeModbus</code><a class="reference internal" href="../_modules/solar/chargemodbus.html#ChargeModbus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solar.chargemodbus.ChargeModbus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read E3DC system status data from modbus interface</p>
+<dl class="method">
+<dt id="solar.chargemodbus.ChargeModbus.run_collect">
+<code class="sig-name descname">run_collect</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; solar.definitions.pvdataclasses.PVStatus<a class="reference internal" href="../_modules/solar/chargemodbus.html#ChargeModbus.run_collect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solar.chargemodbus.ChargeModbus.run_collect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return collected data</p>
+</dd></dl>
+
+</dd></dl>
+
+<hr class="docutils" />
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Set correct IP address of E3DC system.</p>
+</div>
+<dl class="class">
+<dt id="solar.definitions.pvdataclasses.ModbusDefaults">
+<em class="property">class </em><code class="sig-prename descclassname">solar.definitions.pvdataclasses.</code><code class="sig-name descname">ModbusDefaults</code><span class="sig-paren">(</span><em class="sig-param">_tcp_ip: str = '192.168.1.168'</em>, <em class="sig-param">keys: list = &lt;factory&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/solar/definitions/pvdataclasses.html#ModbusDefaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solar.definitions.pvdataclasses.ModbusDefaults" title="Permalink to this definition">¶</a></dt>
+<dd><p>E3DC IP address, collect intervall and data fields to retain.</p>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="class">
+<dt id="solar.definitions.pvdataclasses.PVStatus">
+<em class="property">class </em><code class="sig-prename descclassname">solar.definitions.pvdataclasses.</code><code class="sig-name descname">PVStatus</code><span class="sig-paren">(</span><em class="sig-param">dtime: datetime.datetime = 0</em>, <em class="sig-param">pv: int = 0</em>, <em class="sig-param">pv1: int = 0</em>, <em class="sig-param">pv2: int = 0</em>, <em class="sig-param">soc: int = 0</em>, <em class="sig-param">netz: int = 0</em>, <em class="sig-param">akku: int = 0</em>, <em class="sig-param">haus: int = 0</em>, <em class="sig-param">ok: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/solar/definitions/pvdataclasses.html#PVStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solar.definitions.pvdataclasses.PVStatus" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Instances of this class are initiated in <a class="reference internal" href="charge.html#chargeev"><span class="std std-ref">class ChargeEV</span></a></p>
+</div>
+<hr class="docutils" />
+<p><a class="reference internal" href="../index.html#home"><span class="std std-ref">Solar - Home</span></a></p>
+<p><a class="reference internal" href="../genindex.html"><span class="std std-ref">Index</span></a></p>
+<p><a class="reference internal" href="../py-modindex.html"><span class="std std-ref">Module Index</span></a></p>
+<p><a class="reference internal" href="../search.html"><span class="std std-ref">Search Page</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="send_status.html"
+                        title="previous chapter"><em>function</em> send_status</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="teslaapiclient.html"
+                        title="next chapter"><em>class</em> Car and <em>class</em> Vehicle</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/docs/chargemodbus.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="teslaapiclient.html" title="class Car and class Vehicle"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="send_status.html" title="function send_status"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Solar 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, GFI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

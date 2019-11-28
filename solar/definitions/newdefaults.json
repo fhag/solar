@@ -1,0 +1,15 @@
+{
+"seconds_btw_updates": 300,
+"fname_charging_status": "solar/data/charging_flag.csv",
+"soc_minimum": 20,
+"evsoc_std": 65,
+
+"evsoc_limit_low": 80,
+"evstart_power_low": -3000,
+"evstop_power_low": 6000,
+
+"evsoc_limit_high": 90,
+"evstart_power_high": -5000,
+"evstop_power_high": 5000
+}
+

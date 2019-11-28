@@ -1,0 +1,230 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Configuration &#8212; Solar 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="class ChargeEV" href="charge.html" />
+    <link rel="prev" title="Examples" href="examples.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="charge.html" title="class ChargeEV"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="Examples"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Solar 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="configuration">
+<span id="settings"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="access-data">
+<h2>Access data<a class="headerlink" href="#access-data" title="Permalink to this headline">¶</a></h2>
+<p>Create a file in the folder solar/solar/definitions</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">access_data.py</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#  Mandatory access data for E3DC and Tesla Car</span>
+
+<span class="c1">#  Access data for E3DC</span>
+<span class="n">E3DC_IP</span> <span class="o">=</span> <span class="s1">&#39;111.111.111.111&#39;</span>  <span class="c1"># IP Address of E3DC S10 system in local network</span>
+
+<span class="c1">#  Access data for Tesla API</span>
+<span class="n">EMAIL</span> <span class="o">=</span> <span class="s1">&#39;mymail@mymail.ch&#39;</span>
+<span class="n">PW</span> <span class="o">=</span> <span class="s1">&#39;mymailpassword&#39;</span>
+<span class="n">VIN</span> <span class="o">=</span> <span class="s1">&#39;4VISF2E11UI123456&#39;</span>
+<span class="n">HOME</span> <span class="o">=</span> <span class="p">(</span><span class="mf">39.537498</span><span class="p">,</span> <span class="o">-</span><span class="mf">119.4339107</span><span class="p">,</span><span class="mi">2486</span><span class="p">)</span>  <span class="c1"># latitude, longitude of home location</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="e3dc-data-collection">
+<h2>E3DC data collection<a class="headerlink" href="#e3dc-data-collection" title="Permalink to this headline">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Set correct IP address of E3DC system. Without correct IP address data
+collection from E3DC is not possible. If access is not possible a notification is
+sent via email.</p>
+</div>
+<p><a class="reference internal" href="../index.html#home"><span class="std std-ref">Solar - Home</span></a></p>
+</div>
+<hr class="docutils" />
+<div class="section" id="teslaapi-settings">
+<h2>TeslaAPI settings<a class="headerlink" href="#teslaapi-settings" title="Permalink to this headline">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Set correct access data in <em>solar.definitions.access_data.py</em>.
+Wrong credentials are notified via email if set in send_status.</p>
+</div>
+<p><a class="reference internal" href="../index.html#home"><span class="std std-ref">Solar - Home</span></a></p>
+</div>
+<hr class="docutils" />
+<div class="section" id="email-notification">
+<h2>Email notification<a class="headerlink" href="#email-notification" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you would like to receive notification emails a file
+<strong>solar/definitions/send_status_access.py</strong> must be created with the following content.
+No email notifications are sent if settings are incorrect or file is missing.
+For “from_addr” it is recommended to create a free email address just for sending notification mails.</p>
+</div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">send_status_access.py</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#  Access data for Email notification</span>
+
+<span class="c1"># defaults for sending status mails</span>
+
+<span class="n">from_addr</span> <span class="o">=</span> <span class="s1">&#39;carnotification@mymail.com&#39;</span>
+<span class="n">from_name</span> <span class="o">=</span> <span class="s1">&#39;Raspberry&#39;</span>
+<span class="n">from_password</span> <span class="o">=</span> <span class="s1">&#39;notificationpassword&#39;</span>
+<span class="n">to_addrs</span> <span class="o">=</span> <span class="s1">&#39;user@domain.com&#39;</span>
+<span class="n">signature</span> <span class="o">=</span> <span class="s1">&#39;Mail from Raspberry&#39;</span>
+
+<span class="c1"># other values depending on mail server (for Gmail)</span>
+
+<span class="n">port</span> <span class="o">=</span> <span class="mi">587</span>
+<span class="n">smtp_server</span> <span class="o">=</span> <span class="s1">&#39;smtp.gmail.com&#39;</span>
+</pre></div>
+</div>
+</div>
+<p>Function to send emails about the status or errors to user.</p>
+<ul class="simple">
+<li><p>from_addr = <a class="reference external" href="mailto:'carnotification&#37;&#52;&#48;mymail&#46;com">‘carnotification<span>&#64;</span>mymail<span>&#46;</span>com</a>’</p></li>
+<li><p>from_name = ‘Raspberry’</p></li>
+<li><p>from_password = ‘notificationpassword’</p></li>
+<li><p>to_addrs = <a class="reference external" href="mailto:'user&#37;&#52;&#48;domain&#46;com">‘user<span>&#64;</span>domain<span>&#46;</span>com</a>’</p></li>
+<li><p>signature = ‘Mail from Raspberry’</p></li>
+</ul>
+<p># other values depending on mail server</p>
+<ul class="simple">
+<li><p>port = 587</p></li>
+<li><p>smtp_server = ‘smtp.gmail.com’</p></li>
+</ul>
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">solar.send_status.</code><code class="sig-name descname">send_status</code><span class="sig-paren">(</span><em class="sig-param">msgstr: str</em>, <em class="sig-param">subject: str = None</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/solar/send_status.html#send_status"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>send <strong>msgstr</strong> (with <strong>subject</strong>) to <strong>to_addrs</strong></p>
+</dd></dl>
+
+<p><a class="reference internal" href="../index.html#home"><span class="std std-ref">Solar - Home</span></a></p>
+</div>
+<hr class="docutils" />
+<div class="section" id="other-settings">
+<h2>Other settings<a class="headerlink" href="#other-settings" title="Permalink to this headline">¶</a></h2>
+<p>Module containing different dataclasses with some default values.
+Default values can be adapted to specific requirements.</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">solar.definitions.pvdataclasses.</code><code class="sig-name descname">CarDefaults</code><span class="sig-paren">(</span><em class="sig-param">home: tuple</em>, <em class="sig-param">_defaults_last_update: datetime.datetime = datetime.datetime(2019</em>, <em class="sig-param">1</em>, <em class="sig-param">1</em>, <em class="sig-param">8</em>, <em class="sig-param">0)</em>, <em class="sig-param">_defaults_update_intervall: datetime.timedelta = datetime.timedelta(seconds=120)</em>, <em class="sig-param">_athome_km: float = 0.2</em>, <em class="sig-param">_km2seconds_factor: float = 60</em>, <em class="sig-param">seconds_btw_updates: int = 300</em>, <em class="sig-param">ev_trials: int = 5</em>, <em class="sig-param">evsoc_std: int = 70</em>, <em class="sig-param">evsoc_limit_low: int = 80</em>, <em class="sig-param">evstart_power_low: int = -3000</em>, <em class="sig-param">evstop_power_low: int = 6000</em>, <em class="sig-param">evsoc_limit_high: int = 90</em>, <em class="sig-param">evstart_power_high: int = -7000</em>, <em class="sig-param">evstop_power_high: int = 5000</em>, <em class="sig-param">fname_charging_status: str = 'solar/data/charging_flag.csv'</em>, <em class="sig-param">last_charge_limit_soc: int = 0</em>, <em class="sig-param">charging_flag: bool = False</em>, <em class="sig-param">sleep_between_func: int = 1</em>, <em class="sig-param">__version__: str = ''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/solar/definitions/pvdataclasses.html#CarDefaults"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Values and variables for system driving</p>
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">solar.definitions.pvdataclasses.</code><code class="sig-name descname">ChargeDefaults</code><span class="sig-paren">(</span><em class="sig-param">_defaults_path: str = 'solar/definitions/', _defaults_file: str = 'newdefaults.json', _fname: str = 'PV2_%Y_%m_%d.csv', _path: str = 'solar/data/', _log_to_file: bool = True, soc_minimum: float = 20, charge_state: bool = False, old_netz_status: bool = False, check_intervall: int = 60, state: solar.definitions.pvdataclasses.PVStatus = PVStatus(dtime=0, pv=0, pv1=0, pv2=0, soc=0, netz=0, akku=0, haus=0, ok=False), evathome_distance: float = 200, netz_vals: solar.definitions.pvdataclasses.Values = Values(values=deque([False], maxlen=1)), coll_vals: solar.definitions.pvdataclasses.Values = Values(values=deque([False], maxlen=1)), e3dc_time_last_connection: float = 0, e3dc_error_minimum_time: float = 900</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/solar/definitions/pvdataclasses.html#ChargeDefaults"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Values and variables for system charging</p>
+</dd></dl>
+
+<hr class="docutils" />
+<p><a class="reference internal" href="../index.html#home"><span class="std std-ref">Solar - Home</span></a></p>
+<p><a class="reference internal" href="../genindex.html"><span class="std std-ref">Index</span></a></p>
+<p><a class="reference internal" href="../py-modindex.html"><span class="std std-ref">Module Index</span></a></p>
+<p><a class="reference internal" href="../search.html"><span class="std std-ref">Search Page</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Configuration</a><ul>
+<li><a class="reference internal" href="#access-data">Access data</a></li>
+<li><a class="reference internal" href="#e3dc-data-collection">E3DC data collection</a></li>
+<li><a class="reference internal" href="#teslaapi-settings">TeslaAPI settings</a></li>
+<li><a class="reference internal" href="#email-notification">Email notification</a></li>
+<li><a class="reference internal" href="#other-settings">Other settings</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="examples.html"
+                        title="previous chapter">Examples</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="charge.html"
+                        title="next chapter"><em>class</em> ChargeEV</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/docs/configuration.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="charge.html" title="class ChargeEV"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="Examples"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Solar 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, GFI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

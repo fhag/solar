@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Examples &#8212; Solar 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Configuration" href="configuration.html" />
+    <link rel="prev" title="Introduction" href="introduction.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Solar 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="full-solar">
+<h2>Full solar<a class="headerlink" href="#full-solar" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-left" id="id1">
+<a class="reference internal image-reference" href="../_images/inenvelope.png"><img alt="../_images/inenvelope.png" src="../_images/inenvelope.png" style="width: 842.8px; height: 396.9px;" /></a>
+<p class="caption"><span class="caption-text">Graph data is taken at 15 minutes intervalls. Car charging ist from 12.15
+to 13.00.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>Legend:</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd">Produktion</dt>
+<dd class="field-odd"><p>chart showing solar power production</p>
+</dd>
+<dt class="field-even">Direktverbrauch</dt>
+<dd class="field-even"><p>power directly consumed</p>
+</dd>
+<dt class="field-odd">Batterie (Laden)</dt>
+<dd class="field-odd"><p>power used to charge battery (&lt;= 3kW)</p>
+</dd>
+<dt class="field-even">Netzeinspeisung</dt>
+<dd class="field-even"><p>power to grid</p>
+</dd>
+<dt class="field-odd">S Produktion</dt>
+<dd class="field-odd"><p>total solar power production</p>
+</dd>
+<dt class="field-even">Prognose</dt>
+<dd class="field-even"><p>forecast of solar power production based on weather forecasts</p>
+</dd>
+</dl>
+</div></blockquote>
+<p><a class="reference internal" href="../index.html#home"><span class="std std-ref">Solar - Home</span></a></p>
+</div>
+<div class="section" id="mixed-charging">
+<h2>Mixed charging<a class="headerlink" href="#mixed-charging" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-default" id="id2">
+<a class="reference internal image-reference" href="../_images/overenvelope.png"><img alt="../_images/overenvelope.png" src="../_images/overenvelope.png" style="width: 674.8px; height: 652.4px;" /></a>
+<p class="caption"><span class="caption-text">Mixed charging with grid and solar power (from 15.30 to 17.30) reduces
+costs even if the more expensive grid power is used.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>The maximum grid power to use for car charging is
+defined in “cardefaults.json”.</p>
+<p>Additional legend:</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd">Hausverbrauch</dt>
+<dd class="field-odd"><p>power consumption of all house consumers</p>
+</dd>
+<dt class="field-even">Batterie (Entladen)</dt>
+<dd class="field-even"><p>power provided by battery discharging (&lt;= 3kW)</p>
+</dd>
+<dt class="field-odd">Netzbezug</dt>
+<dd class="field-odd"><p>power from grid</p>
+</dd>
+</dl>
+</div></blockquote>
+<p><a class="reference internal" href="../index.html#home"><span class="std std-ref">Solar - Home</span></a></p>
+</div>
+<div class="section" id="end-of-day">
+<h2>End of day<a class="headerlink" href="#end-of-day" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-left" id="id3">
+<a class="reference internal image-reference" href="../_images/endofday.png"><img alt="../_images/endofday.png" src="../_images/endofday.png" style="width: 739.9px; height: 758.8px;" /></a>
+<p class="caption"><span class="caption-text">When solar power is declining at end of day charging is maintained until the
+grid power exceeds the defined threshold (~16.15 to 19.30).</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p>Same legend as above.</p>
+<p><a class="reference internal" href="../index.html#home"><span class="std std-ref">Solar - Home</span></a></p>
+<hr class="docutils" />
+<p><a class="reference internal" href="../index.html#home"><span class="std std-ref">Solar - Home</span></a></p>
+<p><a class="reference internal" href="../genindex.html"><span class="std std-ref">Index</span></a></p>
+<p><a class="reference internal" href="../py-modindex.html"><span class="std std-ref">Module Index</span></a></p>
+<p><a class="reference internal" href="../search.html"><span class="std std-ref">Search Page</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Examples</a><ul>
+<li><a class="reference internal" href="#full-solar">Full solar</a></li>
+<li><a class="reference internal" href="#mixed-charging">Mixed charging</a></li>
+<li><a class="reference internal" href="#end-of-day">End of day</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="introduction.html"
+                        title="previous chapter">Introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="configuration.html"
+                        title="next chapter">Configuration</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/docs/examples.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Introduction"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Solar 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, GFI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Introduction &#8212; Solar 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="Solar - Home" href="../index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="Examples"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Solar - Home"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Solar 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>The purpose of this application is to maximise electric car (EV) charging with local solar power.
+The application monitors the power fed into the grid, and switches car charging on, if the car is at home, needs charging and
+enough power is collected from the solar panel.
+Normally the car charging is set to 60% or 70%, and charged overnight, if necessary.
+During the day the car is charged up to 90% (or higher if set higher) if solar power is available.</p>
+<p>The application runs on a Raspberry Pi which is connected to the local network and has internet access (through the router).
+The Main application monitors the state of the PV system and power fed to the grid.
+If all conditions are met car charging is started if car conditions are met (at home, plugged in, needs charging and connection established).</p>
+<p>The application avoids excessive on/off switching and car polling.</p>
+<div class="section" id="solar-installation">
+<h2>Solar installation<a class="headerlink" href="#solar-installation" title="Permalink to this headline">¶</a></h2>
+<p>94 solar panels on the roof with 27.7 kWp power are installed. Two inverters
+(“PV Wechselrichter” and “ext. Quelle”) feed the E3DC S10 system.
+Depending on power consumption (“Hausverbrauch”) and production
+main consumers are switched on or off by the E3DC system.</p>
+<p>Consumers which can be switched on/off are:</p>
+<ul class="simple">
+<li><p>hot water boiler for 200l  (2000W)</p></li>
+<li><p>hot water boiler for 300l  (3000W)</p></li>
+<li><p>heat pump overheating buffer tank with 300l (4000W) (SG Ready Standard)</p></li>
+<li><p>battery of E3DC S10 with 19.8kWh (+/- 3000W)  (“Batterie”)</p></li>
+</ul>
+<p>All consumers draw power only if the target temperatures or state of charge are not yet met.
+Excessive power is delivered/taken to/from the grid (“Netz”) .</p>
+<p>A Tesla car draws 11kW when charging through the wall charger.</p>
+<img alt="../_images/systemoverview.png" src="../_images/systemoverview.png" />
+<p><a class="reference internal" href="../index.html#home"><span class="std std-ref">Solar - Home</span></a></p>
+</div>
+<div class="section" id="solar-fuel-costs">
+<h2>“Solar fuel” costs<a class="headerlink" href="#solar-fuel-costs" title="Permalink to this headline">¶</a></h2>
+<p>Maximising self-sufficiency is including car charging reduces load to the grid and minimes power costs.
+As each installation will have different prices and costs all trigger parameters must be adapted to the specific installation.
+In this installation the costs are as follows$.</p>
+<ul class="simple">
+<li><p>Power from the grid costs ~ CHF 0.15 - 0.19 (depending on day time and weekday)</p></li>
+<li><p>Power fed into the grid yields return of CHF 0.038 after income taxes.</p></li>
+</ul>
+<p>Hence charging for 100km (200W/km) costs approximately between CHF 3.00 to 3.80 with
+grid power. The opportunity costs for 100km with 100% solar power are CHF 0.76 in comparison.</p>
+<p><a class="reference internal" href="../index.html#home"><span class="std std-ref">Solar - Home</span></a></p>
+</div>
+<div class="section" id="charging-parameters">
+<h2>Charging parameters<a class="headerlink" href="#charging-parameters" title="Permalink to this headline">¶</a></h2>
+<p>Obviously the “optimal” charging depends on costs, main consumers, charging
+power, driving and consumption habits, technical system, power production and
+other factors. The parameters for switch power on and off are therefore
+estimated and can be adjusted. They are defined in “newdefaults.json”.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">“cardefaults.json”</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-json notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="nt">&quot;seconds_btw_updates&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+<span class="nt">&quot;fname_charging_status&quot;</span><span class="p">:</span> <span class="s2">&quot;solar/data/charging_flag.csv&quot;</span><span class="p">,</span>
+<span class="nt">&quot;soc_minimum&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+<span class="nt">&quot;evsoc_std&quot;</span><span class="p">:</span> <span class="mi">65</span><span class="p">,</span>
+
+<span class="nt">&quot;evsoc_limit_low&quot;</span><span class="p">:</span> <span class="mi">80</span><span class="p">,</span>
+<span class="nt">&quot;evstart_power_low&quot;</span><span class="p">:</span> <span class="mi">-3000</span><span class="p">,</span>
+<span class="nt">&quot;evstop_power_low&quot;</span><span class="p">:</span> <span class="mi">6000</span><span class="p">,</span>
+
+<span class="nt">&quot;evsoc_limit_high&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span>
+<span class="nt">&quot;evstart_power_high&quot;</span><span class="p">:</span> <span class="mi">-5000</span><span class="p">,</span>
+<span class="nt">&quot;evstop_power_high&quot;</span><span class="p">:</span> <span class="mi">5000</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<dl class="option">
+<dt id="cmdoption-arg-seconds-btw-updates">
+<code class="sig-name descname">seconds_btw_updates</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-arg-seconds-btw-updates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Seconds between car updates (activation of car API)</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-arg-fname-charging-status">
+<code class="sig-name descname">fname_charging_status</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-arg-fname-charging-status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path and filename for saving charging_flag status e.g. “solar/data/charging_flag.csv”</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-arg-soc-minimum">
+<code class="sig-name descname">soc_minimum</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-arg-soc-minimum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimum state of charge of house battery before allowing car charging. When car charging
+is switched on depending on day time or cloud coverage the solar power production is not sufficient.
+The house battery reduces the gap and thus minimes grid consumption.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-arg-evsoclimit-low">
+<code class="sig-name descname">evsoclimit_low</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-arg-evsoclimit-low" title="Permalink to this definition">¶</a></dt>
+<dd><p>Up to this lower charging limit the following trigger levels are valid</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-arg-evstart-power-low">
+<code class="sig-name descname">evstart_power_low</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-arg-evstart-power-low" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start charging when power to grid (negative) exceeds this limit</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-arg-evstop-power-low">
+<code class="sig-name descname">evstop_power_low</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-arg-evstop-power-low" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop charging when power from grid (positive) exceeds this limit</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-arg-evsoclimit-high">
+<code class="sig-name descname">evsoclimit_high</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-arg-evsoclimit-high" title="Permalink to this definition">¶</a></dt>
+<dd><p>Up to this higher charging limit the following trigger levels are valid</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-arg-evstart-power-high">
+<code class="sig-name descname">evstart_power_high</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-arg-evstart-power-high" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start charging when power to grid (negative) exceeds this limit</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-arg-evstop-power-high">
+<code class="sig-name descname">evstop_power_high</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-arg-evstop-power-high" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop charging when power from grid (positive) exceeds this limit</p>
+</dd></dl>
+
+<hr class="docutils" />
+<p><a class="reference internal" href="../index.html#home"><span class="std std-ref">Solar - Home</span></a></p>
+<p><a class="reference internal" href="../genindex.html"><span class="std std-ref">Index</span></a></p>
+<p><a class="reference internal" href="../py-modindex.html"><span class="std std-ref">Module Index</span></a></p>
+<p><a class="reference internal" href="../search.html"><span class="std std-ref">Search Page</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction</a><ul>
+<li><a class="reference internal" href="#solar-installation">Solar installation</a></li>
+<li><a class="reference internal" href="#solar-fuel-costs">“Solar fuel” costs</a></li>
+<li><a class="reference internal" href="#charging-parameters">Charging parameters</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../index.html"
+                        title="previous chapter">Solar - Home</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="examples.html"
+                        title="next chapter">Examples</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/docs/introduction.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="Examples"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Solar - Home"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Solar 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, GFI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>
