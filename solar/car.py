@@ -31,7 +31,7 @@ from solar.definitions.pvdataclasses import CarData
 from solar.definitions.access_data import EMAIL, PW, VIN, HOME
 from solar.send_status import send_status
 
-__version__ = '0.1.55'
+__version__ = '0.1.56'
 print(f'car v{__version__}')
 
 logger = logging.getLogger(__name__)
