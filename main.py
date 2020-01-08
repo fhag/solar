@@ -21,7 +21,7 @@ logger.addFilter(FILTER)
 logger.error(logger.handlers)
 logger.error(logger.getChild(NAME))
 
-__version__ = '0.1.3'
+__version__ = '0.1.6'
 
 if __name__ == '__main__':
     print(f'main v{__version__}')
@@ -31,7 +31,7 @@ if __name__ == '__main__':
         self.check_internet()
         logger.info('init test2')
 
-#    ChargeEV.__init__ = __init__
+    # ChargeEV.__init__ = __init__
 
     ev = ChargeEV()
     loggerDict = logging.root.manager.loggerDict

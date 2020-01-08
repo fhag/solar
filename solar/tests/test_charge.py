@@ -40,14 +40,16 @@ def test__update_default_values(tmp_dir, ev):
     fname = 'test.json'
     ev._defaults_path = ''
     ev._defaults_file = fname
-    ev.soc_minimum = 20
+    ev.soc_minimum_start = 21
+    ev.soc_minimum_stop = 6
     ev.car.evsoc_std = 77
-    jdata = {"soc_minimum": 22, "evsoc_std": 65}
+    jdata = {"soc_minimum_start": 22, "soc_minimum_stop": 7, "evsoc_std": 65}
     with open(fname, 'w') as file:
         file.write(json.dumps(jdata))
     print(os.listdir())
     ev._update_default_values()
-    assert ev.soc_minimum == 22
+    assert ev.soc_minimum_start == 22
+    assert ev.soc_minimum_stop == 7
     assert ev.car.evsoc_std == 65
     # test for general Exception
     ev._defaults_file = fname + '|>:%&'
@@ -71,10 +73,18 @@ def test__netz(ev):
 @run_test_switch
 def test__housebattery_soc_ok(ev):
     ev.state.soc = 0.15
-    ev.soc_minimum = 0.2
+    ev.soc_minimum_start = 0.2
+    ev.soc_minimum_stop = 0.05
+    ev.car.charging_flag = False
     assert not ev._housebattery_soc_ok()
     ev.state.soc = 0.25
     assert ev._housebattery_soc_ok()
+
+    ev.car.charging_flag = True
+    ev.state.soc = 0.15
+    assert ev._housebattery_soc_ok()
+    ev.state.soc = 0.01
+    assert not ev._housebattery_soc_ok()
 
 
 @run_test_switch

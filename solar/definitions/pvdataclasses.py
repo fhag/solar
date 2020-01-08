@@ -9,12 +9,14 @@ from collections import deque
 from datetime import datetime, timedelta
 from solar.definitions.access_data import HOME, E3DC_IP
 
-__version__ = '0.1.33'
+__version__ = '0.1.36'
 print(f'pvdataclasses.py v{__version__}')
 
 
 @dataclass(frozen=False)
 class PVStatus():
+    '''Class to store state variables of PV system'''
+
     dtime: datetime = 0
     pv: int = 0
     pv1: int = 0
@@ -26,19 +28,24 @@ class PVStatus():
     ok: bool = False
 
     def __post_init__(self):
+        '''initialize PVStatus'''
         self.pv = self.pv1 + self.pv2
 
 
 @dataclass(frozen=False)
 class Values():
     '''
+    Trigger change only if state change is stable over all values
+
     maxlength of deque determines the how many times conditions must be met
     before triggering start or stop charging
     '''
-    maxlength = 1
+
+    maxlength = 5
     values: deque = field(default=deque([False] * maxlength, maxlength))
 
     def __post_init__(self):
+        '''Initialize empty value deque'''
         self.values = self.values.copy()
 
     def alltrue(self):
@@ -50,18 +57,21 @@ class Values():
         return not any(self.values)
 
     def anytrue(self):
+        '''Return True if any value is True'''
         return any(self.values)
 
 
 @dataclass(frozen=False)
 class ChargeDefaults():
     '''Values and variables for system charging'''
+
     _defaults_path: str = 'solar/definitions/'
     _defaults_file: str = 'newdefaults.json'
     _fname: str = 'PV2_%Y_%m_%d.csv'
     _path: str = 'solar/data/'
     _log_to_file: bool = True
-    soc_minimum: float = 20
+    soc_minimum_start: float = 20
+    soc_minimum_stop: float = 20
     charge_state: bool = False
     old_netz_status: bool = False
     check_intervall: int = 60
@@ -76,13 +86,13 @@ class ChargeDefaults():
 
 @dataclass(frozen=False)
 class ModbusDefaults():
-    '''
-    E3DC IP address, collect intervall and data fields to retain.
-    '''
+    '''E3DC IP address, collect intervall and data fields to retain.'''
+
     _tcp_ip: str = E3DC_IP
     keys: list = field(default_factory=list)
 
     def __post_init__(self):
+        '''defines values to keep'''
         self.keys = [40068, 40076, 40070, 40074, 40072, 40083, 40082]
         self.keys = [40036, 40052, 40068, 40076, 40070, 40074, 40072,
                      40083, 40082, 40084]
@@ -91,6 +101,7 @@ class ModbusDefaults():
 @dataclass(frozen=False)
 class CarDefaults():
     '''Values and variables for system driving'''
+
     home: tuple
     _defaults_last_update: datetime = datetime(2019, 1, 1, 8, 0)
     _defaults_update_intervall: timedelta = timedelta(seconds=120)
@@ -114,6 +125,8 @@ class CarDefaults():
 
 @dataclass(frozen=False)
 class CarData(CarDefaults):
+    '''State values of car'''
+
     timestamp: int = 0
     battery_level: int = 0
     charge_limit_soc: int = 0
@@ -142,10 +155,12 @@ class CarData(CarDefaults):
 
     @property
     def location(self):
+        '''Tuple with location'''
         return (self.latitude, self.longitude)
 
     @property
     def charging(self):
+        '''True if car is charging'''
         return self.charging_state == 'Charging'
 
 

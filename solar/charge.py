@@ -52,7 +52,7 @@ from solar.car import Car
 from solar.definitions.access_data import EMAIL, PW, VIN, HOME
 from solar.send_status import send_status
 
-__version__ = '0.1.56'
+__version__ = '0.1.57'
 print(f'charge v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -65,7 +65,7 @@ class ChargeEV(ChargeDefaults):
     def __init__(self):
         super().__init__()
         self.__version__ = __version__
-        self.temp = datetime.now()
+        # self.temp = datetime.now()
         self.check_internet()
         self.modbus = ChargeModbus()
         self.car = Car(EMAIL, PW, VIN, HOME)
@@ -126,7 +126,11 @@ class ChargeEV(ChargeDefaults):
 
     def _housebattery_soc_ok(self) -> bool:
         '''True if house battery SOC > self.soc_minimum or NaN'''
-        return self.state.soc >= self.soc_minimum
+        if self.car.charging_flag:
+            soc_minimum = self.soc_minimum_stop
+        else:
+            soc_minimum = self.soc_minimum_start
+        return self.state.soc >= soc_minimum
 
     def _pvstateok(self) -> bool:
         '''True if contact to modbus, False after loosing contact'''
@@ -139,9 +143,7 @@ class ChargeEV(ChargeDefaults):
         return max(0, self.check_intervall - now % self.check_intervall)
 
     def get_new_values(self) -> PVStatus:
-        '''
-        Return new values from E3DC system collected via modbus interface
-        '''
+        '''Return new state values from E3DC system via modbus interface'''
         try:
             delay = time.time() - self.e3dc_time_last_connection
             pvdata = self.modbus.collect()
@@ -205,10 +207,11 @@ class ChargeEV(ChargeDefaults):
 
     def check_internet(self, sleeptime=1, www='https://www.google.com'):
         '''
-        Wait until internet is available. True if availabe,
-        False if timeout exceeded
+        Wait until internet is available.
 
-        - self.check_internet_timeout : defined in pvdataclasses.ChargeDefaults
+        - True if internet availabe
+        - False if timeout exceeded
+        - self.check_internet_timeout: from pvdataclasses.ChargeDefaults
         '''
         for i in range(self.check_internet_timeout):
             try:
@@ -226,7 +229,9 @@ class ChargeEV(ChargeDefaults):
 
     def run(self):
         '''
-        Start application and loop checking state of photovoltaic system.
+        Start application and loop until Interrupt
+
+        Checking state of photovoltaic system.
         Initiates start/stop charging if conditions are met.
         '''
         logger.info('Start running')

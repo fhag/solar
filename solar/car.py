@@ -31,7 +31,7 @@ from solar.definitions.pvdataclasses import CarData
 from solar.definitions.access_data import EMAIL, PW, VIN, HOME
 from solar.send_status import send_status
 
-__version__ = '0.1.56'
+__version__ = '0.1.57'
 print(f'car v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -73,6 +73,7 @@ class Car(CarData):
     def _km_from_home(self) -> float:
         """
         Calculate the Haversine distance.
+
         * origin : tuple of float (lat, long)
         * destination : tuple of float (lat, long)
         * -> distance_in_km : float
@@ -94,8 +95,9 @@ class Car(CarData):
 
     def current_power_start_stop(self) -> tuple:
         '''
-        Get current start and stop power limits depending on car charging
-        level. Levels are defined in *cardefaults.json*
+        Get current start and stop power limits subject tocar charging level.
+
+        Levels are defined in *cardefaults.json*
         '''
         if self.battery_level < self.evsoc_limit_low:
             return self.evstart_power_low, self.evstop_power_low
