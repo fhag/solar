@@ -70,14 +70,14 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">socket</span>
-<span class="kn">from</span> <span class="nn">email.mime.text</span> <span class="k">import</span> <span class="n">MIMEText</span>
+<span class="kn">from</span> <span class="nn">email.mime.text</span> <span class="kn">import</span> <span class="n">MIMEText</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">solar.definitions.send_status_access</span> <span class="k">as</span> <span class="nn">access</span>
 <span class="k">except</span> <span class="n">ModuleNotFoundError</span><span class="p">:</span>
     <span class="k">class</span> <span class="nc">AccessDummy</span><span class="p">():</span>
         <span class="sd">&#39;&#39;&#39;Empty class with no access data&#39;&#39;&#39;</span>
-        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">from_addr</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">from_password</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">from_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
@@ -89,7 +89,7 @@
     <span class="n">access</span> <span class="o">=</span> <span class="n">AccessDummy</span><span class="p">()</span>
 
 <span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;0.1.14&#39;</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;send_status v</span><span class="si">{__version__}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;send_status v</span><span class="si">{__version__}</span><span class="s1">&#39;</span><span class="p">)</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
@@ -114,13 +114,13 @@
         <span class="k">return</span> <span class="s1">&#39;&#39;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">msgtxts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="n">msgtxts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Mail from </span><span class="si">{hname}</span><span class="s1"> with IP </span><span class="si">{ipadr}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">msgtxts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;{time.strftime(&quot;%A, </span><span class="si">%d</span><span class="s1">. %B %Y&quot;)}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">msgtxts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;</span><span class="si">{msgstr}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">msgtxts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="si">{access.signature}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">msgtxts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Mail from </span><span class="si">{hname}</span><span class="s1"> with IP </span><span class="si">{ipadr}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">msgtxts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;{time.strftime(&quot;%A, </span><span class="si">%d</span><span class="s1">. %B %Y&quot;)}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">msgtxts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{msgstr}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">msgtxts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="si">{access.signature}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">msgtxt</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">msgtxts</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">subject</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">subject</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;Solar-Car-Charger : {time.ctime()}&#39;</span>
+            <span class="n">subject</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Solar-Car-Charger : {time.ctime()}&#39;</span>
         <span class="k">with</span> <span class="n">smtplib</span><span class="o">.</span><span class="n">SMTP</span><span class="p">(</span><span class="n">access</span><span class="o">.</span><span class="n">smtp_server</span><span class="p">,</span> <span class="n">access</span><span class="o">.</span><span class="n">port</span><span class="p">)</span> <span class="k">as</span> <span class="n">server</span><span class="p">:</span>
             <span class="n">server</span><span class="o">.</span><span class="n">ehlo</span><span class="p">()</span>
             <span class="n">server</span><span class="o">.</span><span class="n">starttls</span><span class="p">()</span>
@@ -177,7 +177,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2019, Gérard Fischer, 5103 Wildegg, CH.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
     </div>
   </body>
 </html>

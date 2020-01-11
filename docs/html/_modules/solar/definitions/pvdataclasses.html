@@ -41,17 +41,19 @@
 <span class="sd">Default values can be adapted to specific requirements.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="k">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">deque</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
-<span class="kn">from</span> <span class="nn">solar.definitions.access_data</span> <span class="k">import</span> <span class="n">HOME</span><span class="p">,</span> <span class="n">E3DC_IP</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">solar.definitions.access_data</span> <span class="kn">import</span> <span class="n">HOME</span><span class="p">,</span> <span class="n">E3DC_IP</span>
 
-<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;0.1.33&#39;</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;pvdataclasses.py v</span><span class="si">{__version__}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;0.1.36&#39;</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;pvdataclasses.py v</span><span class="si">{__version__}</span><span class="s1">&#39;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="PVStatus"><a class="viewcode-back" href="../../../docs/chargemodbus.html#solar.definitions.pvdataclasses.PVStatus">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">PVStatus</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Class to store state variables of PV system&#39;&#39;&#39;</span>
+
     <span class="n">dtime</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">pv</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">pv1</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
@@ -63,19 +65,24 @@
     <span class="n">ok</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;initialize PVStatus&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv2</span></div>
 
 
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Values</span><span class="p">():</span>
     <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Trigger change only if state change is stable over all values</span>
+
 <span class="sd">    maxlength of deque determines the how many times conditions must be met</span>
 <span class="sd">    before triggering start or stop charging</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">maxlength</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="n">maxlength</span> <span class="o">=</span> <span class="mi">5</span>
     <span class="n">values</span><span class="p">:</span> <span class="n">deque</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">deque</span><span class="p">([</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="n">maxlength</span><span class="p">,</span> <span class="n">maxlength</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Initialize empty value deque&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">alltrue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -87,18 +94,21 @@
         <span class="k">return</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">anytrue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Return True if any value is True&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="ChargeDefaults"><a class="viewcode-back" href="../../../docs/configuration.html#solar.definitions.pvdataclasses.ChargeDefaults">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">ChargeDefaults</span><span class="p">():</span>
     <span class="sd">&#39;&#39;&#39;Values and variables for system charging&#39;&#39;&#39;</span>
+
     <span class="n">_defaults_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;solar/definitions/&#39;</span>
     <span class="n">_defaults_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;newdefaults.json&#39;</span>
     <span class="n">_fname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;PV2_%Y_%m_</span><span class="si">%d</span><span class="s1">.csv&#39;</span>
     <span class="n">_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;solar/data/&#39;</span>
     <span class="n">_log_to_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">soc_minimum</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">soc_minimum_start</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">soc_minimum_stop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">20</span>
     <span class="n">charge_state</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">old_netz_status</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">check_intervall</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span>
@@ -113,13 +123,13 @@
 
 <div class="viewcode-block" id="ModbusDefaults"><a class="viewcode-back" href="../../../docs/chargemodbus.html#solar.definitions.pvdataclasses.ModbusDefaults">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">ModbusDefaults</span><span class="p">():</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    E3DC IP address, collect intervall and data fields to retain.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="sd">&#39;&#39;&#39;E3DC IP address, collect intervall and data fields to retain.&#39;&#39;&#39;</span>
+
     <span class="n">_tcp_ip</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">E3DC_IP</span>
     <span class="n">keys</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;defines values to keep&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="mi">40068</span><span class="p">,</span> <span class="mi">40076</span><span class="p">,</span> <span class="mi">40070</span><span class="p">,</span> <span class="mi">40074</span><span class="p">,</span> <span class="mi">40072</span><span class="p">,</span> <span class="mi">40083</span><span class="p">,</span> <span class="mi">40082</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="mi">40036</span><span class="p">,</span> <span class="mi">40052</span><span class="p">,</span> <span class="mi">40068</span><span class="p">,</span> <span class="mi">40076</span><span class="p">,</span> <span class="mi">40070</span><span class="p">,</span> <span class="mi">40074</span><span class="p">,</span> <span class="mi">40072</span><span class="p">,</span>
                      <span class="mi">40083</span><span class="p">,</span> <span class="mi">40082</span><span class="p">,</span> <span class="mi">40084</span><span class="p">]</span></div>
@@ -128,6 +138,7 @@
 <div class="viewcode-block" id="CarDefaults"><a class="viewcode-back" href="../../../docs/configuration.html#solar.definitions.pvdataclasses.CarDefaults">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">CarDefaults</span><span class="p">():</span>
     <span class="sd">&#39;&#39;&#39;Values and variables for system driving&#39;&#39;&#39;</span>
+
     <span class="n">home</span><span class="p">:</span> <span class="nb">tuple</span>
     <span class="n">_defaults_last_update</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">_defaults_update_intervall</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
@@ -151,6 +162,8 @@
 
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">CarData</span><span class="p">(</span><span class="n">CarDefaults</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;State values of car&#39;&#39;&#39;</span>
+
     <span class="n">timestamp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">battery_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">charge_limit_soc</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
@@ -179,10 +192,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">location</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Tuple with location&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">latitude</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">longitude</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">charging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;True if car is charging&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">charging_state</span> <span class="o">==</span> <span class="s1">&#39;Charging&#39;</span>
 
 
@@ -231,7 +246,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2019, Gérard Fischer, 5103 Wildegg, CH.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
     </div>
   </body>
 </html>

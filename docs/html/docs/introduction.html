@@ -105,19 +105,23 @@ estimated and can be adjusted. They are defined in “newdefaults.json”.</p>
 11
 12
 13
-14</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">{</span>
+14
+15
+16</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="nt">&quot;seconds_btw_updates&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
 <span class="nt">&quot;fname_charging_status&quot;</span><span class="p">:</span> <span class="s2">&quot;solar/data/charging_flag.csv&quot;</span><span class="p">,</span>
-<span class="nt">&quot;soc_minimum&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+<span class="nt">&quot;soc_minimum_start&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+<span class="nt">&quot;soc_minimum_stop&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
 <span class="nt">&quot;evsoc_std&quot;</span><span class="p">:</span> <span class="mi">65</span><span class="p">,</span>
 
 <span class="nt">&quot;evsoc_limit_low&quot;</span><span class="p">:</span> <span class="mi">80</span><span class="p">,</span>
-<span class="nt">&quot;evstart_power_low&quot;</span><span class="p">:</span> <span class="mi">-3000</span><span class="p">,</span>
-<span class="nt">&quot;evstop_power_low&quot;</span><span class="p">:</span> <span class="mi">6000</span><span class="p">,</span>
+<span class="nt">&quot;evstart_power_low&quot;</span><span class="p">:</span> <span class="mi">-2000</span><span class="p">,</span>
+<span class="nt">&quot;evstop_power_low&quot;</span><span class="p">:</span> <span class="mi">7000</span><span class="p">,</span>
 
 <span class="nt">&quot;evsoc_limit_high&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span>
-<span class="nt">&quot;evstart_power_high&quot;</span><span class="p">:</span> <span class="mi">-5000</span><span class="p">,</span>
-<span class="nt">&quot;evstop_power_high&quot;</span><span class="p">:</span> <span class="mi">5000</span>
+<span class="nt">&quot;evstart_power_high&quot;</span><span class="p">:</span> <span class="mi">-3000</span><span class="p">,</span>
+<span class="nt">&quot;evstop_power_high&quot;</span><span class="p">:</span> <span class="mi">6000</span><span class="p">,</span>
+<span class="nt">&quot;__version__&quot;</span><span class="p">:</span> <span class="s2">&quot;0.1.1&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
@@ -249,7 +253,7 @@ The house battery reduces the gap and thus minimes grid consumption.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2019, Gérard Fischer, 5103 Wildegg, CH.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
     </div>
   </body>
 </html>

@@ -81,16 +81,16 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
-<span class="kn">from</span> <span class="nn">solar.definitions.pvdataclasses</span> <span class="k">import</span> <span class="n">ChargeDefaults</span><span class="p">,</span> <span class="n">PVStatus</span>
-<span class="kn">from</span> <span class="nn">solar.chargemodbus</span> <span class="k">import</span> <span class="n">ChargeModbus</span><span class="p">,</span> <span class="n">Modbus_exceptions</span>
-<span class="kn">from</span> <span class="nn">solar.car</span> <span class="k">import</span> <span class="n">Car</span>
-<span class="kn">from</span> <span class="nn">solar.definitions.access_data</span> <span class="k">import</span> <span class="n">EMAIL</span><span class="p">,</span> <span class="n">PW</span><span class="p">,</span> <span class="n">VIN</span><span class="p">,</span> <span class="n">HOME</span>
-<span class="kn">from</span> <span class="nn">solar.send_status</span> <span class="k">import</span> <span class="n">send_status</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">solar.definitions.pvdataclasses</span> <span class="kn">import</span> <span class="n">ChargeDefaults</span><span class="p">,</span> <span class="n">PVStatus</span>
+<span class="kn">from</span> <span class="nn">solar.chargemodbus</span> <span class="kn">import</span> <span class="n">ChargeModbus</span><span class="p">,</span> <span class="n">Modbus_exceptions</span>
+<span class="kn">from</span> <span class="nn">solar.car</span> <span class="kn">import</span> <span class="n">Car</span>
+<span class="kn">from</span> <span class="nn">solar.definitions.access_data</span> <span class="kn">import</span> <span class="n">EMAIL</span><span class="p">,</span> <span class="n">PW</span><span class="p">,</span> <span class="n">VIN</span><span class="p">,</span> <span class="n">HOME</span>
+<span class="kn">from</span> <span class="nn">solar.send_status</span> <span class="kn">import</span> <span class="n">send_status</span>
 
-<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;0.1.56&#39;</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;charge v</span><span class="si">{__version__}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;0.1.58&#39;</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;charge v</span><span class="si">{__version__}</span><span class="s1">&#39;</span><span class="p">)</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
@@ -99,15 +99,15 @@
 <div class="viewcode-block" id="ChargeEV"><a class="viewcode-back" href="../../docs/charge.html#solar.charge.ChargeEV">[docs]</a><span class="k">class</span> <span class="nc">ChargeEV</span><span class="p">(</span><span class="n">ChargeDefaults</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;class for charging with PV power&#39;&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__version__</span> <span class="o">=</span> <span class="n">__version__</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">temp</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="c1"># self.temp = datetime.now()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_internet</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">modbus</span> <span class="o">=</span> <span class="n">ChargeModbus</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">car</span> <span class="o">=</span> <span class="n">Car</span><span class="p">(</span><span class="n">EMAIL</span><span class="p">,</span> <span class="n">PW</span><span class="p">,</span> <span class="n">VIN</span><span class="p">,</span> <span class="n">HOME</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">send_status</span> <span class="o">=</span> <span class="n">send_status</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;charge.py v</span><span class="si">{__version__}</span><span class="s1"> with </span><span class="se">\</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;charge.py v</span><span class="si">{__version__}</span><span class="s1"> with </span><span class="se">\</span>
 <span class="s1">        car.py v</span><span class="si">{self.car.__version__}</span><span class="s1"> successfully started&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">send_status</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39; __init__: charge.py v</span><span class="si">%s</span><span class="s1"> completed &#39;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">),</span>
@@ -131,7 +131,7 @@
             <span class="n">keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">car</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">new_values</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
-                <span class="n">ftext</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;</span><span class="si">{key}</span><span class="s1">: </span><span class="si">{new_values[key]}</span><span class="s1">: {getattr(self.car, key)}&#39;</span>
+                <span class="n">ftext</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{key}</span><span class="s1">: </span><span class="si">{new_values[key]}</span><span class="s1">: {getattr(self.car, key)}&#39;</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">ftext</span><span class="p">)</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">car</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">new_values</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">):</span>
@@ -155,15 +155,19 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">new_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">old_netz_status</span>
         <span class="n">ftext</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">car</span><span class="o">.</span><span class="n">current_power_start_stop</span><span class="p">())</span>
-        <span class="n">ftext</span> <span class="o">+=</span> <span class="n">f</span><span class="s1">&#39; | </span><span class="si">{self.netz_vals}</span><span class="s1"> | new_status:</span><span class="si">{new_status}</span><span class="s1">&#39;</span>
-        <span class="n">ftext</span> <span class="o">+=</span> <span class="n">f</span><span class="s1">&#39;|  old_status:</span><span class="si">{self.old_netz_status}</span><span class="s1">&#39;</span>
+        <span class="n">ftext</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; | </span><span class="si">{self.netz_vals}</span><span class="s1"> | new_status:</span><span class="si">{new_status}</span><span class="s1">&#39;</span>
+        <span class="n">ftext</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;|  old_status:</span><span class="si">{self.old_netz_status}</span><span class="s1">&#39;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">ftext</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">old_netz_status</span> <span class="o">=</span> <span class="n">new_status</span>
         <span class="k">return</span> <span class="n">new_status</span>
 
     <span class="k">def</span> <span class="nf">_housebattery_soc_ok</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&#39;&#39;&#39;True if house battery SOC &gt; self.soc_minimum or NaN&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">soc</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">soc_minimum</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">car</span><span class="o">.</span><span class="n">charging_flag</span><span class="p">:</span>
+            <span class="n">soc_minimum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">soc_minimum_stop</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">soc_minimum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">soc_minimum_start</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">soc</span> <span class="o">&gt;=</span> <span class="n">soc_minimum</span>
 
     <span class="k">def</span> <span class="nf">_pvstateok</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&#39;&#39;&#39;True if contact to modbus, False after loosing contact&#39;&#39;&#39;</span>
@@ -176,9 +180,7 @@
         <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_intervall</span> <span class="o">-</span> <span class="n">now</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_intervall</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ChargeEV.get_new_values"><a class="viewcode-back" href="../../docs/charge.html#solar.charge.ChargeEV.get_new_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_new_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PVStatus</span><span class="p">:</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Return new values from E3DC system collected via modbus interface</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="sd">&#39;&#39;&#39;Return new state values from E3DC system via modbus interface&#39;&#39;&#39;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">delay</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">e3dc_time_last_connection</span>
             <span class="n">pvdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modbus</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
@@ -188,7 +190,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">save_to_csv</span><span class="p">(</span><span class="n">pvdict</span><span class="p">)</span>
             <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modbus</span><span class="o">.</span><span class="n">data2pvstate</span><span class="p">(</span><span class="n">pvdata</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">delay</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">e3dc_error_minimum_time</span><span class="p">:</span>
-                <span class="n">ftext</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;E3DC Connection established at {datetime.now()} &#39;</span>
+                <span class="n">ftext</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;E3DC Connection established at {datetime.now()} &#39;</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">ftext</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">send_status</span><span class="p">(</span><span class="n">ftext</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">e3dc_time_last_connection</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -198,7 +200,7 @@
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">e3dc_time_last_connection</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;E3DC Connection error already notified&#39;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">ftext</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;E3DC Connection lost at {datetime.now()} &#39;</span>
+                    <span class="n">ftext</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;E3DC Connection lost at {datetime.now()} &#39;</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">ftext</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">send_status</span><span class="p">(</span><span class="n">ftext</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">e3dc_time_last_connection</span> <span class="o">=</span> <span class="mi">0</span>
@@ -236,16 +238,17 @@
                     <span class="n">writer</span><span class="o">.</span><span class="n">writeheader</span><span class="p">()</span>
                 <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">savedict</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">PermissionError</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-            <span class="n">ftext</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;Could not save data: </span><span class="si">{err}</span><span class="s1">&#39;</span>
+            <span class="n">ftext</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Could not save data: </span><span class="si">{err}</span><span class="s1">&#39;</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">ftext</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">send_status</span><span class="p">(</span><span class="n">ftext</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">check_internet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sleeptime</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">www</span><span class="o">=</span><span class="s1">&#39;https://www.google.com&#39;</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Wait until internet is available. True if availabe,</span>
-<span class="sd">        False if timeout exceeded</span>
+<span class="sd">        Wait until internet is available.</span>
 
-<span class="sd">        - self.check_internet_timeout : defined in pvdataclasses.ChargeDefaults</span>
+<span class="sd">        - True if internet availabe</span>
+<span class="sd">        - False if timeout exceeded</span>
+<span class="sd">        - self.check_internet_timeout: from pvdataclasses.ChargeDefaults</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">check_internet_timeout</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
@@ -254,7 +257,6 @@
             <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="s1">&#39;Internet connection established after </span><span class="si">%.0f</span><span class="s1"> sec&#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
-                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">sleeptime</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">True</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Unexpected Exception after </span><span class="si">%.0f</span><span class="s1"> seconds&#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
@@ -263,7 +265,9 @@
 
 <div class="viewcode-block" id="ChargeEV.run"><a class="viewcode-back" href="../../docs/charge.html#solar.charge.ChargeEV.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Start application and loop checking state of photovoltaic system.</span>
+<span class="sd">        Start application and loop until Interrupt</span>
+
+<span class="sd">        Checking state of photovoltaic system.</span>
 <span class="sd">        Initiates start/stop charging if conditions are met.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start running&#39;</span><span class="p">)</span>
@@ -273,7 +277,7 @@
             <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_update_default_values</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_new_values</span><span class="p">()</span>
-                <span class="n">ftxt</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> charging_state:</span><span class="si">{self.car.charging_state!r}</span><span class="s1">&#39;</span>
+                <span class="n">ftxt</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> charging_state:</span><span class="si">{self.car.charging_state!r}</span><span class="s1">&#39;</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">ftxt</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">))</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">ftxt</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">))</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
@@ -295,14 +299,14 @@
                                     <span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">infotxt</span><span class="p">))</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">finfotxt</span><span class="p">)</span>
                 <span class="n">sleep_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_time</span><span class="p">()</span>
-                <span class="n">ftext</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39; Sleeping </span><span class="si">{sleep_time:5.1f}</span><span class="s1"> sec,   &#39;</span>
-                <span class="n">ftext</span> <span class="o">+=</span> <span class="n">f</span><span class="s1">&#39;car.battery_level: </span><span class="si">{self.car.battery_level:3.0f}</span><span class="s1"> &#39;</span>
+                <span class="n">ftext</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39; Sleeping </span><span class="si">{sleep_time:5.1f}</span><span class="s1"> sec,   &#39;</span>
+                <span class="n">ftext</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;car.battery_level: </span><span class="si">{self.car.battery_level:3.0f}</span><span class="s1"> &#39;</span>
                 <span class="n">ftext</span> <span class="o">=</span> <span class="n">ftext</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">ftext</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">ftext</span><span class="p">)</span>
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">sleep_time</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;User abort - normal break : </span><span class="si">{err}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;User abort - normal break : </span><span class="si">{err}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;User abort - normal break </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ERROR break&#39;</span><span class="p">)</span>
@@ -349,7 +353,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2019, Gérard Fischer, 5103 Wildegg, CH.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
     </div>
   </body>
 </html>
