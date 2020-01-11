@@ -6,6 +6,7 @@
 # skip credential file
 **/access_data.py
 **/send_status_access.py
+**- Kopie.*
 
 
 # skip all temporary and old files and directories
