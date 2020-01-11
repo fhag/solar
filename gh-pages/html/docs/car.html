@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>class Car &#8212; Solar 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="function send_status" href="send_status.html" />
+    <link rel="prev" title="class ChargeEV" href="charge.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="send_status.html" title="function send_status"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="charge.html" title="class ChargeEV"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Solar 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="class-car">
+<span id="car"></span><h1><em>class</em> Car<a class="headerlink" href="#class-car" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<span class="target" id="module-solar.car"></span><p><em>class</em> Car contains all Tesla car data and methods to access car
+Methods for self.func are imported from <em>class</em> Vehicle in module
+teslaapiclient.teslavehicle</p>
+<dl class="class">
+<dt id="solar.car.Car">
+<em class="property">class </em><code class="sig-prename descclassname">solar.car.</code><code class="sig-name descname">Car</code><span class="sig-paren">(</span><em class="sig-param">email</em>, <em class="sig-param">pw</em>, <em class="sig-param">vin</em>, <em class="sig-param">home</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/solar/car.html#Car"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solar.car.Car" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataclass containing all Tesla car status and data collected from vehicle</p>
+<ul class="simple">
+<li><p>methods to collect data, update data and start and stop charging</p></li>
+<li><p>checks credentials and correct vin at startup</p></li>
+<li><p>home = (latitude, longitude) of car’s home location</p></li>
+</ul>
+<dl class="method">
+<dt id="solar.car.Car.athome">
+<code class="sig-name descname">athome</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/solar/car.html#Car.athome"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solar.car.Car.athome" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if car is at home</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="solar.car.Car.current_power_start_stop">
+<code class="sig-name descname">current_power_start_stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; tuple<a class="reference internal" href="../_modules/solar/car.html#Car.current_power_start_stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solar.car.Car.current_power_start_stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get current start and stop power limits subject tocar charging level.</p>
+<p>Levels are defined in <em>cardefaults.json</em></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="solar.car.Car.start_charging">
+<code class="sig-name descname">start_charging</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; tuple<a class="reference internal" href="../_modules/solar/car.html#Car.start_charging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solar.car.Car.start_charging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start charging car if all conditions are met and set <em>charging_flag</em></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="solar.car.Car.stop_charging">
+<code class="sig-name descname">stop_charging</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/solar/car.html#Car.stop_charging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solar.car.Car.stop_charging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop charging car if <em>charging_flag</em> set - else no wake up!</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="solar.car.Car.update_car">
+<code class="sig-name descname">update_car</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/solar/car.html#Car.update_car"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solar.car.Car.update_car" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update car instance with all car data and timestamp</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="solar.car.Car.update_car_if">
+<code class="sig-name descname">update_car_if</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/solar/car.html#Car.update_car_if"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solar.car.Car.update_car_if" title="Permalink to this definition">¶</a></dt>
+<dd><p>Conditional update of car instance with all car data  and timestamp if:</p>
+<ul class="simple">
+<li><p>car is driving or</p></li>
+<li><p>car is close enough and last recent update is old enough</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This class is initiated by <em>class</em> ChargeEV</p>
+</div>
+<hr class="docutils" />
+<p><a class="reference internal" href="../index.html#home"><span class="std std-ref">Solar - Home</span></a></p>
+<p><a class="reference internal" href="../genindex.html"><span class="std std-ref">Index</span></a></p>
+<p><a class="reference internal" href="../py-modindex.html"><span class="std std-ref">Module Index</span></a></p>
+<p><a class="reference internal" href="../search.html"><span class="std std-ref">Search Page</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="charge.html"
+                        title="previous chapter"><em>class</em> ChargeEV</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="send_status.html"
+                        title="next chapter"><em>function</em> send_status</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/docs/car.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="send_status.html" title="function send_status"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="charge.html" title="class ChargeEV"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Solar 1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Gérard Fischer, 5103 Wildegg, CH.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
+    </div>
+  </body>
+</html>
