@@ -7,4 +7,4 @@ The purpose of this application is to maximise electric car (EV) charging with l
 
 [Open full documentation](https://fhag.github.io/solar/docs/html/index.html "full docu")
 
- <a href="index.html" target=_blank>Open full documentation</a>
+ <a href="https://fhag.github.io/solar/docs/html/index.html" target=_blank>Open full documentation</a>
