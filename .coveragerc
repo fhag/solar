@@ -1,9 +1,0 @@
-[run]
-omit=solar/datacheck.py, solar/old*.py, solar/tests/*.py, solar/definitions/e3dc*.py,
-        solar/chargemodbus.py, solar/teslaapi/*.py, solar/v.py
-
-[report]
-exclude_lines =
-    def __init__
-    if __name__ == '__main__'
-    def __post_init__

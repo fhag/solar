@@ -33,7 +33,7 @@ m.bat
 *.pyproj
 .vs/**
 *.sln
-.coverage
+.coverage**
 **/.spyproject
 .pylint**
 
