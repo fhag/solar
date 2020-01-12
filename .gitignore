@@ -21,9 +21,11 @@ tmp*.py
 **/*.log
 **/*.csv
 
-
+# skip some folders
 htmlcov/**
 source/**
+# only upload docs in gh-pages branch
+docs/**
 
 make.bat
 Makefile
