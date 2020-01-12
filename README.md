@@ -1,3 +1,3 @@
 # solar
 Charge your car with solar power
-[link](../master/docs/index.html)
+[link](https://fhag.github.io/solar/docs/html/index.html)
