@@ -1,3 +1,3 @@
 # solar
 Charge your car with solar power
-[link](../docs/index.html)
+[link](../master/docs/index.html)
