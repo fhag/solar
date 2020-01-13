@@ -18,21 +18,11 @@ logger.addHandler(FILEHANDLER)
 FILTER = Filter(NAME)
 logger.addFilter(FILTER)
 
-logger.error(logger.handlers)
-logger.error(logger.getChild(NAME))
 
-__version__ = '0.1.6'
+__version__ = '0.1.7'
 
 if __name__ == '__main__':
     print(f'main v{__version__}')
-
-    def __init__(self):
-        logger.info('init test')
-        self.check_internet()
-        logger.info('init test2')
-
-    # ChargeEV.__init__ = __init__
-
     ev = ChargeEV()
     loggerDict = logging.root.manager.loggerDict
     loggers = [name for name in loggerDict if 'solar' in name]
