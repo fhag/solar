@@ -52,7 +52,7 @@ from solar.car import Car
 from solar.definitions.access_data import EMAIL, PW, VIN, HOME
 from solar.send_status import send_status
 
-__version__ = '0.1.58'
+__version__ = '0.1.59'
 print(f'charge v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -65,7 +65,6 @@ class ChargeEV(ChargeDefaults):
     def __init__(self):
         super().__init__()
         self.__version__ = __version__
-        # self.temp = datetime.now()
         self.check_internet()
         self.modbus = ChargeModbus()
         self.car = Car(EMAIL, PW, VIN, HOME)
@@ -217,12 +216,14 @@ class ChargeEV(ChargeDefaults):
             try:
                 response = urllib.request.urlopen(www)
                 assert response.code != 200
-            except AssertionError:
+            except (AssertionError):
                 logger.warning(
                     'Internet connection established after %.0f sec', i)
                 return True
+            except (urllib.error.URLError, urllib.error.HTTPError):
+                logger.debug('Connection Error after %.0f seconds', i)
             except Exception:
-                logger.debug('Unexpected Exception after %.0f seconds', i)
+                logger.error('Unexpected Exception after %.0f seconds', i)
             time.sleep(sleeptime)
         raise KeyboardInterrupt('No internet connection after %.0f sec' % i)
 
