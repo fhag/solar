@@ -8,9 +8,6 @@ import logging
 from solar.charge import ChargeEV
 from solar.definitions.logger_config import FILEHANDLER, Filter
 
-print(__package__)
-print(__name__)
-
 NAME = 'solar'
 logger = logging.getLogger(NAME)
 logger.setLevel(logging.DEBUG)
@@ -19,7 +16,7 @@ FILTER = Filter(NAME)
 logger.addFilter(FILTER)
 
 
-__version__ = '0.1.7'
+__version__ = '0.1.8'
 
 if __name__ == '__main__':
     print(f'main v{__version__}')

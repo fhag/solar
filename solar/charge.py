@@ -52,7 +52,7 @@ from solar.car import Car
 from solar.definitions.access_data import EMAIL, PW, VIN, HOME
 from solar.send_status import send_status
 
-__version__ = '0.1.60'
+__version__ = '0.1.63'
 print(f'charge v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -65,6 +65,7 @@ class ChargeEV(ChargeDefaults):
     def __init__(self):
         super().__init__()
         self.__version__ = __version__
+        self.defaults_version = ''
         self.check_internet()
         self.modbus = ChargeModbus()
         self.car = Car(EMAIL, PW, VIN, HOME)
@@ -82,19 +83,17 @@ class ChargeEV(ChargeDefaults):
             fname = os.path.normpath(fname)
             with open(fname, 'rb') as file:
                 new_values = json.loads(file.read())
-            logger.info(new_values)
+            if new_values['__version__'] != self.defaults_version:
+                logger.info(str(new_values).replace(', ','\n        '))
+                self.defaults_version = new_values['__version__']
             # update charge defaults
-            keys = set(self.__dict__.keys()) & set(new_values.keys())
-            for key in keys:
-                logger.debug('%s: %s: %s', key,
-                             new_values[key], getattr(self, key))
+            charge_keys = set(self.__dict__.keys()) & set(new_values.keys())
+            for key in charge_keys:
                 setattr(self, key, new_values[key])
             # update car defaults
-            keys = set(self.car.__dict__.keys()) & set(new_values.keys())
-            logger.debug(keys)
-            for key in keys:
-                ftext = f'{key}: {new_values[key]}: {getattr(self.car, key)}'
-                logger.debug(ftext)
+            car_keys = set(self.car.__dict__.keys()) & set(new_values.keys())
+            # logger.debug(keys)
+            for key in car_keys:
                 setattr(self.car, key, new_values[key])
         except (FileNotFoundError, json.JSONDecodeError):
             logger.warning('FileNotFoundError: %s', fname)
@@ -152,7 +151,8 @@ class ChargeEV(ChargeDefaults):
                 self.save_to_csv(pvdict)
             response = self.modbus.data2pvstate(pvdata)
             if delay > self.e3dc_error_minimum_time:
-                ftext = f'E3DC Connection established at {datetime.now()} '
+                ftext = 'E3DC Connection established to {} at {}'
+                ftext = ftext.format(self.modbus._tcp_ip, datetime.now())
                 logger.debug(ftext)
                 self.send_status(ftext)
             self.e3dc_time_last_connection = time.time()
@@ -160,9 +160,11 @@ class ChargeEV(ChargeDefaults):
         except (Modbus_exceptions.ConnectionException, AttributeError):
             if delay > self.e3dc_error_minimum_time:
                 if self.e3dc_time_last_connection == 0:
-                    logger.debug('E3DC Connection error already notified')
+                    ftext = 'E3DC Connection with {} error already notified'
+                    logger.debug(ftext.format(self.modbus._tcp_ip))
                 else:
-                    ftext = f'E3DC Connection lost at {datetime.now()} '
+                    ftext = 'E3DC Connection to {} lost at {}'
+                    ftext = ftext.format(self.modbus._tcp_ip, datetime.now())
                     logger.info(ftext)
                     self.send_status(ftext)
                     self.e3dc_time_last_connection = 0
@@ -265,7 +267,7 @@ class ChargeEV(ChargeDefaults):
                 sleep_time = self._sleep_time()
                 ftext = f' Sleeping {sleep_time:5.1f} sec,   '
                 ftext += f'car.battery_level: {self.car.battery_level:3.0f} '
-                ftext = ftext.center(100, '-')
+                ftext = ftext.center(120, '-')
                 logger.warning(ftext)
                 print(f'{time.strftime("%Y-%m-%d %H:%M")}|{ftext}')
                 time.sleep(sleep_time)
