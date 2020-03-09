@@ -52,7 +52,7 @@ from solar.car import Car
 from solar.definitions.access_data import EMAIL, PW, VIN, HOME
 from solar.send_status import send_status
 
-__version__ = '0.1.59'
+__version__ = '0.1.60'
 print(f'charge v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -267,7 +267,7 @@ class ChargeEV(ChargeDefaults):
                 ftext += f'car.battery_level: {self.car.battery_level:3.0f} '
                 ftext = ftext.center(100, '-')
                 logger.warning(ftext)
-                print(ftext)
+                print(f'{time.strftime("%Y-%m-%d %H:%M")}|{ftext}')
                 time.sleep(sleep_time)
         except (KeyboardInterrupt, IndexError) as err:
             print(f'User abort - normal break : {err}')
