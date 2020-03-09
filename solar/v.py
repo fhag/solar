@@ -7,7 +7,7 @@ import os
 import importlib
 import json
 
-__version__ = '1.0.9'
+__version__ = '1.0.10'
 
 
 def get_allfiles(path, extension='.py'):
