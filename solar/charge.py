@@ -46,13 +46,13 @@ import time
 import logging
 from datetime import datetime
 from collections import namedtuple
-from solar.definitions.pvdataclasses import ChargeDefaults, PVStatus
-from solar.chargemodbus import ChargeModbus, Modbus_exceptions
-from solar.car import Car
-from solar.definitions.access_data import EMAIL, PW, VIN, HOME
-from solar.send_status import send_status
+from .definitions.pvdataclasses import ChargeDefaults, PVStatus
+from .chargemodbus import ChargeModbus, Modbus_exceptions
+from .car import Car
+from .definitions.access_data import EMAIL, PW, VIN, HOME
+from .send_status import send_status
 
-__version__ = '0.1.63'
+__version__ = '0.1.64'
 print(f'charge v{__version__}')
 
 logger = logging.getLogger(__name__)

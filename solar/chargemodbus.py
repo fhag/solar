@@ -23,10 +23,10 @@ import logging
 from datetime import datetime
 import pymodbus.exceptions as Modbus_exceptions
 from pymodbus.client.sync import ModbusTcpClient
-from solar.definitions.e3dc_register import conf
-from solar.definitions.pvdataclasses import PVStatus, ModbusDefaults
+from .definitions.e3dc_register import conf
+from .definitions.pvdataclasses import PVStatus, ModbusDefaults
 
-__version__ = '0.0.15'
+__version__ = '0.0.16'
 print(f'chargemodbus.py v{__version__}')
 
 logger = logging.getLogger(__name__)

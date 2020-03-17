@@ -7,9 +7,9 @@ Default values can be adapted to specific requirements.
 from dataclasses import dataclass, field
 from collections import deque
 from datetime import datetime, timedelta
-from solar.definitions.access_data import HOME, E3DC_IP
+from .access_data import HOME, E3DC_IP
 
-__version__ = '0.1.36'
+__version__ = '0.1.37'
 print(f'pvdataclasses.py v{__version__}')
 
 

@@ -23,9 +23,9 @@ methods for access to Tesla API
 import logging
 from datetime import datetime, timedelta
 import requests
-from solar.teslaapi.teslavehicle import Vehicle
+from .teslavehicle import Vehicle
 
-__version__ = '0.0.10'
+__version__ = '0.0.11'
 print(f'teslaapi.py v{__version__}')
 
 logger = logging.getLogger(__name__)

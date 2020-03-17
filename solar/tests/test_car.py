@@ -10,13 +10,13 @@ import time
 import copy
 import os
 import stat
-from solar.teslaapi import AuthenticationError, ApiError
-from solar.tests.conftest import logger, HOME, carversion
+from ..teslaapi import AuthenticationError, ApiError
+from .conftest import logger, HOME, carversion
 
 # pytest -v -rs tests/test_charge.py
 # pytest --cov-report html:cov_html --cov=arequests tests/test_charge.py
 
-__version__ = '0.1.54'
+__version__ = '0.1.55'
 
 print(f'Running test_car.py v{__version__}')
 logger.info(f'Running test_car.py v{__version__}')

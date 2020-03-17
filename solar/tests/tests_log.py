@@ -7,12 +7,12 @@ Created on Tue Nov 13 08:34:14 2018
 """
 import logging
 import datetime
-__version__ = '0.1.55'
 
+__version__ = '0.1.55'
 
 LOG_LEVEL = logging.DEBUG
 LOGGER_NAME = 'solar'
-LOGGER_FNAME = f'solar/logs/pytest_{datetime.datetime.now():%Y_%m_%d_%H%M}.log'
+LOGGER_FNAME = f'./logs/pytest_{datetime.datetime.now():%Y_%m_%d_%H%M}.log'
 
 logger = logging.Logger(LOGGER_NAME)
 logger.setLevel(LOG_LEVEL)

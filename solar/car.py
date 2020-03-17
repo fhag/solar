@@ -26,12 +26,12 @@ import os
 import csv
 import json
 import logging
-from solar.teslaapi import TeslaApiClient, AuthenticationError, ApiError
-from solar.definitions.pvdataclasses import CarData
-from solar.definitions.access_data import EMAIL, PW, VIN, HOME
-from solar.send_status import send_status
+from .teslaapi import TeslaApiClient, AuthenticationError, ApiError
+from .definitions.pvdataclasses import CarData
+from .definitions.access_data import EMAIL, PW, VIN, HOME
+from .send_status import send_status
 
-__version__ = '0.1.57'
+__version__ = '0.1.58'
 print(f'car v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -50,6 +50,7 @@ class Car(CarData):
     def __init__(self, email, pw, vin, home):
         super().__init__(home)
         self.__version__ = __version__
+        self.data = None
         logger.info('car.py v%s', __version__)
         try:
             self.client = TeslaApiClient(email, pw)

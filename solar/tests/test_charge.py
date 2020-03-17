@@ -4,8 +4,8 @@ Created on Fri Apr 19 18:49:25 2019
 
 @author: annet
 """
-import pytest
 
+import pytest
 import types
 import time
 import copy
@@ -14,12 +14,13 @@ import stat
 import json
 from collections import deque
 from datetime import datetime
-from solar.tests.conftest import logger, chargeversion
-from solar.definitions.pvdataclasses import PVStatus, Values
+from .conftest import logger, chargeversion
+from ..definitions.pvdataclasses import PVStatus, Values
 
 
-__version__ = '0.1.54'
+__version__ = '0.1.55'
 print(f'Running test_charge.py v{__version__}')
+
 logger.info(f'Running test_charge.py v{__version__}')
 
 testall = True
@@ -30,7 +31,7 @@ not_implemented = pytest.mark.skipif(True,
                                      reason='function not yet implemented')
 
 
-# -----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 @run_test
 def test__update_default_values(tmp_dir, ev):
     ev = copy.deepcopy(ev)
@@ -43,10 +44,11 @@ def test__update_default_values(tmp_dir, ev):
     ev.soc_minimum_start = 21
     ev.soc_minimum_stop = 6
     ev.car.evsoc_std = 77
-    jdata = {"soc_minimum_start": 22, "soc_minimum_stop": 7, "evsoc_std": 65}
+    jdata = {"soc_minimum_start": 22, "soc_minimum_stop": 7,
+             "evsoc_std": 65, "__version__" : "2.2.2"}
     with open(fname, 'w') as file:
         file.write(json.dumps(jdata))
-    print(os.listdir())
+    ev.defaults_version = '1.1.1'
     ev._update_default_values()
     assert ev.soc_minimum_start == 22
     assert ev.soc_minimum_stop == 7
@@ -60,7 +62,7 @@ def test__update_default_values(tmp_dir, ev):
 @run_test_switch
 def test__netz(ev):
     ev.car.current_power_start_stop = types.MethodType(
-            lambda self: (-5000, 2000), ev)
+        lambda self: (-5000, 2000), ev)
     ev.state.netz = -3000
     ev.car.charging_flag = True
     n = 5
@@ -91,8 +93,7 @@ def test__housebattery_soc_ok(ev):
 def test_pvstateok(ev):
     print(ev.coll_vals.values, len(ev.coll_vals.values))
     ev.state.ok = True
-    for i in range(len(ev.coll_vals.values)):
-        assert ev._pvstateok()
+    assert ev._pvstateok()
     ev.state.ok = False
     print()
     for i in range(len(ev.coll_vals.values) - 1):
@@ -112,11 +113,11 @@ def test__sleep_time(ev):
 def test_get_new_values(ev):
     ev.modbus.collect = types.MethodType(lambda self: dict(ok=True), ev)
     ev.modbus.data2pvstate = types.MethodType(
-            lambda self, x: PVStatus(
-                    **{k: v for k, v in x.items() if k in PVStatus.__dict__}
-                    ),
-            ev)
+        lambda self, x: PVStatus(
+            **{k: v for k, v in x.items() if k in PVStatus.__dict__}),
+        ev)
     ev.modbus.data2dict = types.MethodType(lambda self, x: x, ev)
+    ev.modbus._tcp_ip = '1.0.0.127'
     ev.save_to_csv = types.MethodType(lambda self, x: True, ev)
     ev.state = ev.get_new_values()
     print(ev.state)

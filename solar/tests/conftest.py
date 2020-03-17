@@ -3,30 +3,19 @@
 import os
 import pytest
 import types
-import logging
 import numpy as np
 import shutil
 import time
-from solar.car import Car
-from solar.car import __version__ as carversion
-from solar.charge import ChargeEV
-from solar.charge import __version__ as chargeversion
-from solar.definitions.pvdataclasses import PVStatus
-from solar.tests.tests_log import logger
+from ..car import Car
+from ..car import __version__ as carversion
+from ..charge import ChargeEV
+from ..charge import __version__ as chargeversion
+from ..definitions.pvdataclasses import PVStatus
+from .tests_log import logger
 
-__version__ = '0.1.55'
+__version__ = '0.1.56'
 
 EMAIL, PW, VIN, HOME = 'test', 'test', '123', (12, 34)
-
-#NAME = 'solar'
-#logger = logging.getLogger(NAME)
-#logger.setLevel(logging.DEBUG)
-#logger.addHandler(FILEHANDLER)
-#FILTER = Filter(NAME)
-#logger.addFilter(FILTER)
-#
-#logger.error(logger.handlers)
-#logger.error(logger.getChild(NAME))
 
 
 ftext = f'testing car.py:v{carversion} and charge.py:v{chargeversion}'
@@ -41,8 +30,6 @@ def tmp_dir():
     _emptyTmpDir = '_tmpe' + str(np.random.randint(10000, 99999)) + '/'
     os.makedirs(_emptyTmpDir)
     # ~ os.makedirs(_emptyTmpDir + 'data/')
-    # ~ os.makedirs(_emptyTmpDir + 'log/')
-    # ~ os.makedirs(_emptyTmpDir + 'data_path/')
     os.chdir(_emptyTmpDir)
     logger.info(f'tmp_dir: {_emptyTmpDir!r} initialised')
     yield _emptyTmpDir
