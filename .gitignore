@@ -10,6 +10,7 @@
 
 
 # skip all temporary and old files and directories
+testmain.py
 temp*.py
 tmp*.py
 **/temp/**
