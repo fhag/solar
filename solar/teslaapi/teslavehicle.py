@@ -24,7 +24,7 @@ from teslapy import VehicleError
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 print(f'teslavehicle.py v{__version__}')
 
 
@@ -57,7 +57,12 @@ class Vehicle(teslapy.Vehicle):
 
     def wake_up(self) -> dict:
         '''Wake-up car'''
-        self.sync_wake_up()
+        try:
+            self.sync_wake_up()
+        except Exception as err:
+            logger.warning(f'ERROR: {err}')
+            return {'state': 'ASLEEP'}
+        return {'state': 'AWAKE'}
 
     @property
     def id(self):

@@ -31,7 +31,7 @@ from .definitions.pvdataclasses import CarData
 from .definitions.access_data import EMAIL, PW, VIN, HOME
 from .send_status import send_status
 
-__version__ = '0.1.58'
+__version__ = '0.1.59'
 print(f'car v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -188,7 +188,7 @@ class Car(CarData):
             data.update(self.func.get_vehicle_state())
             timestamps.append(data['timestamp'])
             data.update(dict(data_ok=True))
-            data.update(dict(timestamp=max(timestamps)/1000))
+            data.update(dict(timestamp=max(timestamps) / 1000))
             self.data = data  # for debugging
             logger.debug(data)
             keys = self.__dict__.keys()
@@ -244,7 +244,6 @@ class Car(CarData):
     def _get_new_soc_limit(self) -> int:
         '''return new soc limit to set'''
         return max(self.charge_limit_soc, self.evsoc_limit_high)
-
 
     def _save_charging_status(self):
         '''save charging flag status to file'''
