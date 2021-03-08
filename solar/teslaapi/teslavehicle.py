@@ -24,7 +24,7 @@ from teslapy import VehicleError
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 print(f'teslavehicle.py v{__version__}')
 
 
@@ -92,51 +92,62 @@ class Vehicle(teslapy.Vehicle):
         '''Start charging -> {'reason': '', 'result': True}'''
         self.wake_up()
         try:
-            return self.command('START_CHARGE')
+            self.command('START_CHARGE')
         except VehicleError as err:
-            logger.warning(err)
-        return False
+            return dict(result=False, reason=str(err))
+        else:
+            return dict(result=True, reason='')
 
     def stop_charging(self) -> dict:
         '''Stop charging -> {'reason': '', 'result': True}'''
         try:
-            return self.command('STOP_CHARGE')
+            self.command('STOP_CHARGE')
         except VehicleError as err:
-            logger.warning(err)
-        return False
+            return dict(result=False, reason=str(err))
+        else:
+            return dict(result=True, reason='')
 
-    def set_charge_limit(self, percentage: int):
+    def set_charge_limit(self, percentage: int) -> dict:
         '''Set charge level -> {'reason': '', 'result': True}'''
         self.wake_up()
-        percentage = round(percentage)
+        percentage = int(round(percentage, 0))
         if 50 <= percentage <= 100:
             kwargs = dict(percent=percentage)
-            return self.command('CHANGE_CHARGE_LIMIT', **kwargs)
+            try:
+                self.command('CHANGE_CHARGE_LIMIT', **kwargs)
+            except VehicleError as err:
+                return dict(result=False, reason=str(err))
+            else:
+                return dict(result=True, reason='')
         logger.error('Charge limit outside allowed range')
         raise ValueError('Percentage should be between 50 and 100')
 
     def get_climate_state(self):
         return self.get_vehicle_data()['climate_state']
 
-    def start_climate(self):
+    def start_climate(self) -> dict:
         """start heating/air conditioning"""
         self.wake_up()
         try:
-            return self.command('CLIMATE_ON')
+            self.command('CLIMATE_ON')
         except VehicleError as err:
-            logger.warning(err)
-        return False
+            return dict(result=False, reason=str(err))
+        else:
+            return dict(result=True, reason='')
 
-    def stop_climate(self):
+    def stop_climate(self) -> dict:
         """Stop heating/air conditioning"""
         self.wake_up()
         try:
-            return self.command('CLIMATE_OFF')
+            self.command('CLIMATE_OFF')
         except VehicleError as err:
-            logger.warning(err)
-        return False
+            return dict(result=False, reason=str(err))
+        else:
+            return dict(result=True, reason='')
 
-    def set_temperature(self, driver_temperature, passenger_temperature=None):
+    def set_temperature(self,
+                        driver_temperature,
+                        passenger_temperature=None) -> dict:
         self.wake_up()
         if driver_temperature is None or passenger_temperature is None:
             settings = self.get_climate_state()
@@ -147,16 +158,25 @@ class Vehicle(teslapy.Vehicle):
         print(driver_temperature, passenger_temperature)
         kwargs = {'driver_temp': driver_temperature,
                   'passenger_temp': passenger_temperature}
-        return self.command('CHANGE_CLIMATE_TEMPERATURE_SETTING', **kwargs)
+        try:
+            self.command('CHANGE_CLIMATE_TEMPERATURE_SETTING', **kwargs)
+        except VehicleError as err:
+            return dict(result=False, reason=str(err))
+        else:
+            return dict(result=True, reason='')
 
-        # return self._api_client.post(
-        #     'vehicles/{}/command/set_temps'.format(self._vehicle_id),
-        #     {'driver_temp': driver_temperature,
-        #      'passenger_temp': passenger_temperature or driver_temperature}
-        # )
+    def open_charge_port(self) -> dict:
+        try:
+            self.command('CHARGE_PORT_DOOR_OPEN')
+        except VehicleError as err:
+            return dict(result=False, reason=str(err))
+        else:
+            return dict(result=True, reason='')
 
-    def open_charge_port(self):
-        return self.command('CHARGE_PORT_DOOR_OPEN')
-
-    def close_charge_port(self):
-        return self.command('CHARGE_PORT_DOOR_CLOSE')
+    def close_charge_port(self) -> dict:
+        try:
+            self.command('CHARGE_PORT_DOOR_CLOSE')
+        except VehicleError as err:
+            return dict(result=False, reason=str(err))
+        else:
+            return dict(result=True, reason='')
