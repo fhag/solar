@@ -26,12 +26,13 @@ import os
 import csv
 import json
 import logging
+from requests.exceptions import HTTPError
 from .teslaapi import TeslaApiClient, AuthenticationError, ApiError
 from .definitions.pvdataclasses import CarData
 from .definitions.access_data import EMAIL, PW, VIN, HOME
 from .send_status import send_status
 
-__version__ = '0.1.59'
+__version__ = '0.1.60'
 print(f'car v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -110,6 +111,7 @@ class Car(CarData):
 
     def _try_start_charging(self) -> bool:
         '''start_until car online'''
+        self._try_wake_up()
         for _ in range(self.ev_trials):
             response = self.func.start_charging()
             if response['result'] or response['reason'] == 'charging':
@@ -121,6 +123,7 @@ class Car(CarData):
 
     def _try_stop_charging(self) -> bool:
         '''stop_charging until car online'''
+        self._try_wake_up()
         for _ in range(self.ev_trials):
             response = self.func.stop_charging()
             if response['result'] or response['reason'] == 'not_charging':
@@ -132,6 +135,7 @@ class Car(CarData):
 
     def _try_set_charge_limit(self, charge_limit):
         '''remember old limit and set new limit with exception handling'''
+        self._try_wake_up()
         try:
             _charge_limit = int(float(charge_limit))
         except ValueError:
@@ -197,7 +201,7 @@ class Car(CarData):
                     setattr(self, key, value)
             logger.debug('Car data successfully updated:%s', self)
             return True
-        except (ApiError, AuthenticationError) as err:
+        except (ApiError, AuthenticationError, HTTPError) as err:
             ftext = f'Unable to get car_state due to={err} for {attempt!r}'
             logger.warning('%s |%s', ftext, self)
             self.__dict__.update(dict(data_ok=False))
@@ -216,6 +220,7 @@ class Car(CarData):
 
         * car is close enough and last recent update is old enough
         '''
+        self._try_wake_up()
         elapsed_seconds = max(0, time.time() - self.timestamp)
         not_driving = self.shift_state != 'D'
         ftext = ('shift_state=%s, !driving=%s, battery_level=%2.0f' %
@@ -382,4 +387,4 @@ class Car(CarData):
 
 
 if __name__ == '__main__':
-    car = Car(EMAIL, PW, VIN, HOME)  # car.update_car_if()
+    car = Car(EMAIL, PW, VIN, HOME)
