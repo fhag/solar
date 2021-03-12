@@ -16,12 +16,12 @@ FILTER = Filter(NAME)
 logger.addFilter(FILTER)
 
 
-__version__ = '0.1.8'
+__version__ = '0.1.9'
 
 if __name__ == '__main__':
     print(f'main v{__version__}')
     ev = ChargeEV()
     loggerDict = logging.root.manager.loggerDict
     loggers = [name for name in loggerDict if 'solar' in name]
-    logger.critical(loggers)
+    logger.debug(loggers)
     ev.run()

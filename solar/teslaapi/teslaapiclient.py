@@ -27,7 +27,7 @@ from datetime import datetime, timedelta
 import teslapy
 from .teslavehicle import Vehicle
 
-__version__ = '1.0.1'
+__version__ = '1.0.3'
 print(f'teslaapi.py v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -46,33 +46,6 @@ class TeslaApiClient(teslapy.Tesla):
         except HTTPError:
             raise AuthenticationError('Check credentials')
         logger.info('TeslaApiClient for %s initialised', email)
-
-    # def _get_headers(self):
-    #     '''Return header for get or post commands'''
-    #     return {'Authorization': 'Bearer {}'.format(
-    #         self._token["access_token"])}
-
-    # def get(self, endpoint) -> dict:
-    #     '''get commands returns dict'''
-    #     self.authenticate()
-    #     response = requests.get('{}/{}'.format(API_URL, endpoint),
-    #                             headers=self._get_headers())
-    #     response_json = response.json()
-    #     if 'error' in response_json:
-    #         logger.error('APIError from Tesla')
-    #         raise ApiError(response_json['error'])
-    #     return response_json['response']
-
-    # def post(self, endpoint, data=dict()) -> dict:
-    #     '''post commands returns dict'''
-    #     self.authenticate()
-    #     response = requests.post('{}/{}'.format(API_URL, endpoint),
-    #                              headers=self._get_headers(), data=data)
-    #     response_json = response.json()
-    #     if 'error' in response_json:
-    #         logger.error('APIError from Tesla')
-    #         raise ApiError(response_json['error'])
-    #     return response_json['response']
 
     def list_vehicles(self):
         '''Return a list of valid Vehicle instances'''

@@ -31,12 +31,6 @@ print(f'teslavehicle.py v{__version__}')
 class Vehicle(teslapy.Vehicle):
     """Wrapper of teslapy.Vehicle to adapt to car module"""
 
-    def g(self, method, **kwargs):
-        """ Wrapper method for vehicle command response error handling """
-        uri = 'api/1/vehicles/{v.id}/{method}'
-        response = self.tesla.request('get', uri, **kwargs)['response']
-        return response['result']
-
     def is_mobile_access_enabled(self):
         '''True if mobile access allowed'''
         # Construct URL and send request
@@ -45,15 +39,14 @@ class Vehicle(teslapy.Vehicle):
 
     def get_vehicle_state(self):
         '''returns dict with vehicle state information'''
+        self.wake_up()
         return self.get_vehicle_data()['vehicle_state']
 
     def get_drive_state(self) -> dict:
         '''returns dict with drive state information'''
+        self.wake_up()
         return self.get_vehicle_data()['drive_state']
 
-    def get_gui_settings(self) -> dict:
-        '''Return GUI settings'''
-        return self.get_vehicle_data()['gui_settings']
 
     def wake_up(self) -> dict:
         '''Wake-up car'''
@@ -86,6 +79,7 @@ class Vehicle(teslapy.Vehicle):
 
     def get_charge_state(self):
         '''get state of car with '''
+        self.wake_up()
         return self.get_vehicle_data()['charge_state']
 
     def start_charging(self) -> dict:
@@ -100,6 +94,7 @@ class Vehicle(teslapy.Vehicle):
 
     def stop_charging(self) -> dict:
         '''Stop charging -> {'reason': '', 'result': True}'''
+        self.wake_up()
         try:
             self.command('STOP_CHARGE')
         except VehicleError as err:
@@ -166,6 +161,8 @@ class Vehicle(teslapy.Vehicle):
             return dict(result=True, reason='')
 
     def open_charge_port(self) -> dict:
+        '''Open charge port of vehicle'''
+        self.wake_up()
         try:
             self.command('CHARGE_PORT_DOOR_OPEN')
         except VehicleError as err:
@@ -174,6 +171,8 @@ class Vehicle(teslapy.Vehicle):
             return dict(result=True, reason='')
 
     def close_charge_port(self) -> dict:
+        '''Close charge port of vehicle'''
+        self.wake_up()
         try:
             self.command('CHARGE_PORT_DOOR_CLOSE')
         except VehicleError as err:
