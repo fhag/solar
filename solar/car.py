@@ -30,13 +30,14 @@ from requests.exceptions import HTTPError
 from .teslaapi import TeslaApiClient, AuthenticationError, ApiError
 from .definitions.pvdataclasses import CarData
 from .definitions.access_data import EMAIL, PW, VIN, HOME
+from .definitions.logger_config import LOG_LEVEL
 from .send_status import send_status
 
-__version__ = '0.1.60'
+__version__ = '0.1.65'
 print(f'car v{__version__}')
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(LOG_LEVEL)
 
 
 class Car(CarData):
@@ -148,7 +149,7 @@ class Car(CarData):
                 condition = any([response['result'],
                                  'already' in response['reason']])
                 if condition:
-                    logger.debug('New soc limit=%s   -> %s', _charge_limit,
+                    logger.info('New soc limit=%s   -> %s', _charge_limit,
                                  response)
                     self._reset_timestamp()
                     return True
@@ -193,13 +194,13 @@ class Car(CarData):
             timestamps.append(data['timestamp'])
             data.update(dict(data_ok=True))
             data.update(dict(timestamp=max(timestamps) / 1000))
-            self.data = data  # for debugging
-            logger.debug(data)
+            # self.data = data  # for debugging
+            # logger.debug(data)
             keys = self.__dict__.keys()
             for key, value in data.items():
                 if key in keys:
                     setattr(self, key, value)
-            logger.debug('Car data successfully updated:%s', self)
+            logger.info('Car data successfully updated:%s', self)
             return True
         except (ApiError, AuthenticationError, HTTPError) as err:
             ftext = f'Unable to get car_state due to={err} for {attempt!r}'
@@ -226,17 +227,17 @@ class Car(CarData):
         ftext = ('shift_state=%s, !driving=%s, battery_level=%2.0f' %
                  (self.shift_state, not_driving, self.battery_level))
         if elapsed_seconds < self._km_to_seconds() and not_driving:
-            logger.debug('Car too far away: %.1f sec, elapsed=%.1f sec| %s',
+            logger.info('Car too far away: %.1f sec, elapsed=%.1f sec| %s',
                          self._km_to_seconds(), elapsed_seconds, ftext)
             return False
         if elapsed_seconds < self.seconds_btw_updates and not_driving:
             logger.debug('Last update too recent:%5.0f sec vs. %6.0f sec| %s',
                          self.seconds_btw_updates, elapsed_seconds, ftext)
             return False
-        logger.debug('Before update_car:  %s', ftext)
+        logger.info('Before update_car:  %s', ftext)
         self.update_car()
         if self.data_ok:
-            logger.debug('Update_car successful: %s', ftext)
+            logger.info('Update_car successful: %s', ftext)
             return True
         logger.warning('Update_car failed: %s', ftext)
         return False
@@ -335,7 +336,7 @@ class Car(CarData):
                     self.charging_flag = False
                     self._save_charging_status()
                     self._reset_timestamp()
-                    logger.debug('Car charging stopped')
+                    logger.info('Car charging stopped')
                     return True
         except (AssertionError, ApiError, json.JSONDecodeError) as err:
             logger.warning(err, exc_info=False)
@@ -371,7 +372,7 @@ class Car(CarData):
             if self.charging_flag:
                 return (True, True)  # do nothing - already charging
             response = self._start_car_charging()
-            logger.debug(response)
+            logger.info(response)
             return (True, False)
         return (False, self.stop_charging())
 

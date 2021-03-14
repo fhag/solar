@@ -6,17 +6,17 @@ Created on Sun Oct 20 08:49:35 2019
 """
 import logging
 from solar.charge import ChargeEV
-from solar.definitions.logger_config import FILEHANDLER, Filter
+from solar.definitions.logger_config import FILEHANDLER, Filter, LOG_LEVEL
 
 NAME = 'solar'
 logger = logging.getLogger(NAME)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(LOG_LEVEL)
 logger.addHandler(FILEHANDLER)
 FILTER = Filter(NAME)
 logger.addFilter(FILTER)
 
 
-__version__ = '0.1.9'
+__version__ = '0.1.10'
 
 if __name__ == '__main__':
     print(f'main v{__version__}')
