@@ -50,13 +50,14 @@ from .definitions.pvdataclasses import ChargeDefaults, PVStatus
 from .chargemodbus import ChargeModbus, Modbus_exceptions
 from .car import Car
 from .definitions.access_data import EMAIL, PW, VIN, HOME
+from .definitions.logger_config import LOG_LEVEL
 from .send_status import send_status
 
-__version__ = '0.1.64'
+__version__ = '0.1.65'
 print(f'charge v{__version__}')
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(LOG_LEVEL)
 
 
 class ChargeEV(ChargeDefaults):
@@ -153,7 +154,7 @@ class ChargeEV(ChargeDefaults):
             if delay > self.e3dc_error_minimum_time:
                 ftext = 'E3DC Connection established to {} at {}'
                 ftext = ftext.format(self.modbus._tcp_ip, datetime.now())
-                logger.debug(ftext)
+                logger.info(ftext)
                 self.send_status(ftext)
             self.e3dc_time_last_connection = time.time()
             return response
@@ -244,7 +245,7 @@ class ChargeEV(ChargeDefaults):
                 self._update_default_values()
                 self.state = self.get_new_values()
                 ftxt = f'%s charging_state:{self.car.charging_state!r}'
-                logger.debug(ftxt, str(self.state))
+                logger.info(ftxt, str(self.state))
                 print(ftxt % str(self.state))
                 if self.state.ok:
                     netz = self._netz()
@@ -263,12 +264,12 @@ class ChargeEV(ChargeDefaults):
                         resp = self.car.stop_charging()
                         finfotxt = ('car.stop_charging response=%s, %s' %
                                     (resp, infotxt))
-                    logger.debug(finfotxt)
+                    logger.info(finfotxt)
                 sleep_time = self._sleep_time()
                 ftext = f' Sleeping {sleep_time:5.1f} sec,   '
                 ftext += f'car.battery_level: {self.car.battery_level:3.0f} '
                 ftext = ftext.center(120, '-')
-                logger.warning(ftext)
+                # logger.info(ftext)
                 print(f'{time.strftime("%Y-%m-%d %H:%M")}|{ftext}')
                 time.sleep(sleep_time)
         except (KeyboardInterrupt, IndexError) as err:

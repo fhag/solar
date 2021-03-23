@@ -22,10 +22,10 @@ import logging
 import os
 from datetime import datetime
 
-__version__ = '0.1.3'
+__version__ = '0.1.4'
 
 LOGGER_FNAME = f'solar/logs/main_{datetime.now():%Y_%m_%d_%H%M}.log'
-LOG_LEVEL = logging.DEBUG
+LOG_LEVEL = logging.INFO
 
 FORMATTER = logging.Formatter(
         '%(asctime)s|%(filename)24s|%(levelname)7s|%(funcName)25s|' +
