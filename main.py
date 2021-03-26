@@ -16,7 +16,7 @@ FILTER = Filter(NAME)
 logger.addFilter(FILTER)
 
 
-__version__ = '0.1.10'
+__version__ = '1.0.0'
 
 if __name__ == '__main__':
     print(f'main v{__version__}')
