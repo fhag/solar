@@ -27,7 +27,7 @@ htmlcov/**
 # source/**
 .vscode/**
 # only upload docs in gh-pages branch
-docs/**
+# docs/**
 solar/teslapy/**
 
 make.bat

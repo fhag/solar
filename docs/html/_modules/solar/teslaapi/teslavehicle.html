@@ -1,0 +1,261 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>solar.teslaapi.teslavehicle &#8212; Solar 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Solar 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">solar.teslaapi.teslavehicle</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for solar.teslaapi.teslavehicle</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#  This program is free software; you can redistribute it and/or modify</span>
+<span class="c1">#  it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#  the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c1">#  (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#  This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#  but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#  GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#  You should have received a copy of the GNU General Public License</span>
+<span class="c1">#  along with this program; if not, write to the Free Software</span>
+<span class="c1">#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,</span>
+<span class="c1">#  MA 02110-1301, USA.</span>
+<span class="c1">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">*class* used by *class* Car with method to manipulate car</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">teslapy</span>
+<span class="kn">from</span> <span class="nn">teslapy</span> <span class="kn">import</span> <span class="n">VehicleError</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;1.0.3&#39;</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;teslavehicle.py v</span><span class="si">{</span><span class="n">__version__</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Vehicle"><a class="viewcode-back" href="../../../docs/teslaapiclient.html#solar.teslaapi.teslavehicle.Vehicle">[docs]</a><span class="k">class</span> <span class="nc">Vehicle</span><span class="p">(</span><span class="n">teslapy</span><span class="o">.</span><span class="n">Vehicle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper of teslapy.Vehicle to adapt to car module&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Vehicle.is_mobile_access_enabled"><a class="viewcode-back" href="../../../docs/teslaapiclient.html#solar.teslaapi.teslavehicle.Vehicle.is_mobile_access_enabled">[docs]</a>    <span class="k">def</span> <span class="nf">is_mobile_access_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;True if mobile access allowed&#39;&#39;&#39;</span>
+        <span class="c1"># Construct URL and send request</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;api/1/vehicles/</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/mobile_enabled&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tesla</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="n">uri</span><span class="p">)[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Vehicle.get_vehicle_state"><a class="viewcode-back" href="../../../docs/teslaapiclient.html#solar.teslaapi.teslavehicle.Vehicle.get_vehicle_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_vehicle_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;returns dict with vehicle state information&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wake_up</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_vehicle_data</span><span class="p">()[</span><span class="s1">&#39;vehicle_state&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Vehicle.get_drive_state"><a class="viewcode-back" href="../../../docs/teslaapiclient.html#solar.teslaapi.teslavehicle.Vehicle.get_drive_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_drive_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;returns dict with drive state information&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wake_up</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_vehicle_data</span><span class="p">()[</span><span class="s1">&#39;drive_state&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Vehicle.wake_up"><a class="viewcode-back" href="../../../docs/teslaapiclient.html#solar.teslaapi.teslavehicle.Vehicle.wake_up">[docs]</a>    <span class="k">def</span> <span class="nf">wake_up</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;Wake-up car&#39;&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sync_wake_up</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ERROR: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="s1">&#39;ASLEEP&#39;</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="s1">&#39;AWAKE&#39;</span><span class="p">}</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Vehicle Id: required for API calls&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Car name set by car driver&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;display_name&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">vin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Allocated VIN (Vehicle Identification Number)&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;vin&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;online or offline&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Vehicle.get_charge_state"><a class="viewcode-back" href="../../../docs/teslaapiclient.html#solar.teslaapi.teslavehicle.Vehicle.get_charge_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_charge_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;get state of car with &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wake_up</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_vehicle_data</span><span class="p">()[</span><span class="s1">&#39;charge_state&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Vehicle.start_charging"><a class="viewcode-back" href="../../../docs/teslaapiclient.html#solar.teslaapi.teslavehicle.Vehicle.start_charging">[docs]</a>    <span class="k">def</span> <span class="nf">start_charging</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;Start charging -&gt; {&#39;reason&#39;: &#39;&#39;, &#39;result&#39;: True}&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wake_up</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;START_CHARGE&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">VehicleError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vehicle.stop_charging"><a class="viewcode-back" href="../../../docs/teslaapiclient.html#solar.teslaapi.teslavehicle.Vehicle.stop_charging">[docs]</a>    <span class="k">def</span> <span class="nf">stop_charging</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;Stop charging -&gt; {&#39;reason&#39;: &#39;&#39;, &#39;result&#39;: True}&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wake_up</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;STOP_CHARGE&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">VehicleError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vehicle.set_charge_limit"><a class="viewcode-back" href="../../../docs/teslaapiclient.html#solar.teslaapi.teslavehicle.Vehicle.set_charge_limit">[docs]</a>    <span class="k">def</span> <span class="nf">set_charge_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">percentage</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;Set charge level -&gt; {&#39;reason&#39;: &#39;&#39;, &#39;result&#39;: True}&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wake_up</span><span class="p">()</span>
+        <span class="n">percentage</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">percentage</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="k">if</span> <span class="mi">50</span> <span class="o">&lt;=</span> <span class="n">percentage</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">percent</span><span class="o">=</span><span class="n">percentage</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;CHANGE_CHARGE_LIMIT&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">VehicleError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Charge limit outside allowed range&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Percentage should be between 50 and 100&#39;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">get_climate_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_vehicle_data</span><span class="p">()[</span><span class="s1">&#39;climate_state&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Vehicle.start_climate"><a class="viewcode-back" href="../../../docs/teslaapiclient.html#solar.teslaapi.teslavehicle.Vehicle.start_climate">[docs]</a>    <span class="k">def</span> <span class="nf">start_climate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;start heating/air conditioning&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wake_up</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;CLIMATE_ON&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">VehicleError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vehicle.stop_climate"><a class="viewcode-back" href="../../../docs/teslaapiclient.html#solar.teslaapi.teslavehicle.Vehicle.stop_climate">[docs]</a>    <span class="k">def</span> <span class="nf">stop_climate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Stop heating/air conditioning&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wake_up</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;CLIMATE_OFF&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">VehicleError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">set_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                        <span class="n">driver_temperature</span><span class="p">,</span>
+                        <span class="n">passenger_temperature</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wake_up</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">driver_temperature</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">passenger_temperature</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_climate_state</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">driver_temperature</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">driver_temperature</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;driver_temp_setting&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">passenger_temperature</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">passenger_temperature</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;passenger_temp_setting&#39;</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">driver_temperature</span><span class="p">,</span> <span class="n">passenger_temperature</span><span class="p">)</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;driver_temp&#39;</span><span class="p">:</span> <span class="n">driver_temperature</span><span class="p">,</span>
+                  <span class="s1">&#39;passenger_temp&#39;</span><span class="p">:</span> <span class="n">passenger_temperature</span><span class="p">}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;CHANGE_CLIMATE_TEMPERATURE_SETTING&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">VehicleError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Vehicle.open_charge_port"><a class="viewcode-back" href="../../../docs/teslaapiclient.html#solar.teslaapi.teslavehicle.Vehicle.open_charge_port">[docs]</a>    <span class="k">def</span> <span class="nf">open_charge_port</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;Open charge port of vehicle&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wake_up</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;CHARGE_PORT_DOOR_OPEN&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">VehicleError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vehicle.close_charge_port"><a class="viewcode-back" href="../../../docs/teslaapiclient.html#solar.teslaapi.teslavehicle.Vehicle.close_charge_port">[docs]</a>    <span class="k">def</span> <span class="nf">close_charge_port</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;Close charge port of vehicle&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wake_up</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;CHARGE_PORT_DOOR_CLOSE&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">VehicleError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Solar 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">solar.teslaapi.teslavehicle</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Gérard Fischer, 5103 Wildegg, CH.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+    </div>
+  </body>
+</html>
