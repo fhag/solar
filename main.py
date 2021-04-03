@@ -10,18 +10,11 @@ from solar.definitions.logger_config import FILEHANDLER, CONSOLE, LOG_LEVEL
 
 NAME = 'solar'
 logger = logging.getLogger(NAME)
-logger.addHandler(FILEHANDLER)
-CONSOLE.setLevel(logging.WARNING)
-logger.addHandler(CONSOLE)
 
-__version__ = '1.0.1'
+__version__ = '1.0.2'
+print(__version__)
 
 if __name__ == '__main__':
     print(f'main v{__version__}')
     ev = ChargeEV()
-    loggerDict = logging.root.manager.loggerDict
-    loggers = [name for name in loggerDict if 'solar' in name]
-    loggers.append('teslapy')
-    for ilogger in loggers:
-        loggerDict[ilogger].setLevel(LOG_LEVEL)
     ev.run()

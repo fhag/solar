@@ -14,7 +14,7 @@ LOG_LEVEL = logging.DEBUG
 LOGGER_NAME = 'solar'
 LOGGER_FNAME = f'./logs/pytest_{datetime.datetime.now():%Y_%m_%d_%H%M}.log'
 
-logger = logging.Logger(LOGGER_NAME)
+logger = logging.getLogger(LOGGER_NAME)
 logger.setLevel(LOG_LEVEL)
 handler = logging.FileHandler(LOGGER_FNAME, mode='w')
 #handler.setLevel(logging.DEBUG)

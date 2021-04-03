@@ -33,7 +33,7 @@ from .definitions.access_data import EMAIL, PW, VIN, HOME
 from .definitions.logger_config import LOG_LEVEL
 from .send_status import send_status
 
-__version__ = '0.1.66'
+__version__ = '0.1.67'
 print(f'car v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -203,7 +203,7 @@ class Car(CarData):
             logger.info('Car data successfully updated:%s', self)
             return True
         except (ApiError, AuthenticationError, HTTPError) as err:
-            ftext = f'Attempted {attempt!r} Unable to get car_statedue to={err}'
+            ftext = f'Attempted {attempt!r} Unable to get car_state ={err}'
             logger.warning('%s \n%s', ftext, self)
             self.__dict__.update(dict(data_ok=False))
             return False

@@ -21,26 +21,49 @@ Created on Thu Nov  7 13:59:26 2019
 import logging
 import os
 from datetime import datetime
+import teslapy
 
-__version__ = '0.1.5'
+__version__ = '0.1.7'
 
 LOGGER_FNAME = f'solar/logs/main_{datetime.now():%Y_%m_%d_%H%M}.log'
 LOG_LEVEL = logging.DEBUG
-# LOG_LEVEL = logging.WARNING
 
-
-FORMATTER = logging.Formatter(
-        '%(asctime)s|%(filename)24s|%(levelname)7s|%(funcName)25s|' +
-        '%(lineno)3d |%(message)s',
-        "%d%b%y %H:%M.%S")
 FILEHANDLER = logging.FileHandler(os.path.normpath(LOGGER_FNAME), mode='w')
 FILEHANDLER.setLevel(LOG_LEVEL)
-FILEHANDLER.setFormatter(FORMATTER)
+FILE_FORMATTER = logging.Formatter(
+    '%(asctime)s|%(filename)24s|%(levelname)7s|%(funcName)25s|' +
+    '%(lineno)3d |%(message)s',
+    "%d%b%y %H:%M.%S")
+FILEHANDLER.setFormatter(FILE_FORMATTER)
 
 CONSOLE = logging.StreamHandler()
 CONSOLE.setLevel(LOG_LEVEL)
-formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
-CONSOLE.setFormatter(formatter)
+CONSOLE_FORMATTER = logging.Formatter(
+    '%(name)-12s: %(levelname)-8s %(message)s')
+CONSOLE.setFormatter(CONSOLE_FORMATTER)
+
+
+solarlogger = logging.getLogger('solar')
+logger = logging.getLogger(__name__)
+logger.error('Kein Fehler')
+
+__version__ = '1.0.2'
+print(__version__)
+
+loggerDict = logging.root.manager.loggerDict
+loggers = [name for name in loggerDict if 'solar' in name]
+loggers.append('teslapy')
+for ilogger in loggers:
+    print(ilogger)
+    if isinstance(loggerDict[ilogger], logging.Logger):
+        loggerDict[ilogger].setLevel(LOG_LEVEL)
+        handlers = loggerDict[ilogger].handlers
+        for handler in handlers:
+            loggerDict[ilogger].removeHandler(handler)
+        loggerDict[ilogger].addHandler(FILEHANDLER)
+        loggerDict[ilogger].addHandler(CONSOLE)
+        print(loggerDict[ilogger])
+
 
 class Filter():
     '''define my own filter'''
@@ -61,3 +84,12 @@ class Filter():
             print(f'False: {record}')
             return False
         return record.name[self.nlen] == "."
+
+
+def list_loggers(loggers):
+    loggerDict = logging.root.manager.loggerDict
+    loggerlen = max([len(lgs) for lgs in loggers]) + 3
+    for ilogger in loggers:
+        print(f'{ilogger:{loggerlen}} : {loggerDict[ilogger]}')
+        for handler in loggerDict[ilogger].handlers:
+            print(f'   {ilogger:{loggerlen - 3}} : {handler}')

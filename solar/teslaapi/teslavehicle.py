@@ -50,6 +50,7 @@ class Vehicle(teslapy.Vehicle):
 
     def wake_up(self) -> dict:
         '''Wake-up car'''
+        logger.info('wake_up car')
         try:
             self.sync_wake_up()
         except Exception as err:
