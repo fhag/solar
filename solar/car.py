@@ -33,12 +33,11 @@ from .definitions.access_data import EMAIL, PW, VIN, HOME
 from .definitions.logger_config import LOG_LEVEL
 from .send_status import send_status
 
-__version__ = '0.1.65'
+__version__ = '0.1.66'
 print(f'car v{__version__}')
 
 logger = logging.getLogger(__name__)
 logger.setLevel(LOG_LEVEL)
-
 
 class Car(CarData):
     '''
@@ -165,8 +164,9 @@ class Car(CarData):
 
     def _try_wake_up(self) -> dict:
         '''wake up car until car online'''
-        for _ in range(self.ev_trials):
+        for i in range(self.ev_trials):
             response = self.func.wake_up()
+            logger.warning(response)
             if response['state'].upper() != 'ASLEEP':
                 return response
             time.sleep(self.sleep_between_func)
@@ -203,8 +203,8 @@ class Car(CarData):
             logger.info('Car data successfully updated:%s', self)
             return True
         except (ApiError, AuthenticationError, HTTPError) as err:
-            ftext = f'Unable to get car_state due to={err} for {attempt!r}'
-            logger.warning('%s |%s', ftext, self)
+            ftext = f'Attempted {attempt!r} Unable to get car_statedue to={err}'
+            logger.warning('%s \n%s', ftext, self)
             self.__dict__.update(dict(data_ok=False))
             return False
         except Exception as err:
@@ -289,9 +289,9 @@ class Car(CarData):
                     break
             self.charging_flag = (line.split(';')[1] == 'True')
             self.last_charge_limit_soc = int(line.split(';')[2])
-        except (PermissionError, FileNotFoundError, Exception) as err:
-            ftext = f'Missing file {self.fname_charging_status}'
-            ftext += f' \nCould not get charging_status: {err}'
+        except (PermissionError, FileNotFoundError) as err:
+            ftext = f'Missing file {self.fname_charging_status!r}'
+            # ftext += f' \nCould not get charging_status: {err}'
             logger.warning(ftext, exc_info=False)
             self.send_status(ftext)
 

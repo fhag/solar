@@ -22,10 +22,12 @@ import logging
 import os
 from datetime import datetime
 
-__version__ = '0.1.4'
+__version__ = '0.1.5'
 
 LOGGER_FNAME = f'solar/logs/main_{datetime.now():%Y_%m_%d_%H%M}.log'
-LOG_LEVEL = logging.INFO
+LOG_LEVEL = logging.DEBUG
+# LOG_LEVEL = logging.WARNING
+
 
 FORMATTER = logging.Formatter(
         '%(asctime)s|%(filename)24s|%(levelname)7s|%(funcName)25s|' +
@@ -35,6 +37,10 @@ FILEHANDLER = logging.FileHandler(os.path.normpath(LOGGER_FNAME), mode='w')
 FILEHANDLER.setLevel(LOG_LEVEL)
 FILEHANDLER.setFormatter(FORMATTER)
 
+CONSOLE = logging.StreamHandler()
+CONSOLE.setLevel(LOG_LEVEL)
+formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+CONSOLE.setFormatter(formatter)
 
 class Filter():
     '''define my own filter'''
@@ -42,13 +48,16 @@ class Filter():
     def __init__(self, name=''):
         self.name = name
         self.nlen = len(name)
+        print(f'Filter: {name}')
 
     def filter(self, record):
         '''create filter methode'''
+        print(f'filterrecord:{record}')
         if self.nlen == 0:
             return True
         if self.name == record.name:
             return True
         if record.name.find(self.name, 0, self.nlen) != 0:
+            print(f'False: {record}')
             return False
         return record.name[self.nlen] == "."
