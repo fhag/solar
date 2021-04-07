@@ -17,7 +17,7 @@ from .conftest import logger, HOME, carversion
 # pytest -v -rs tests/test_charge.py
 # pytest --cov-report html:cov_html --cov=arequests tests/test_charge.py
 
-__version__ = '0.1.55'
+__version__ = '0.1.68'
 
 print(f'Running test_car.py v{__version__}')
 logger.info(f'Running test_car.py v{__version__}')
