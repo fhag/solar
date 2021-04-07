@@ -8,6 +8,7 @@ import pytest
 import types
 import time
 import copy
+import logging
 import os
 import stat
 from ..teslaapi import AuthenticationError, ApiError
@@ -20,6 +21,7 @@ __version__ = '0.1.55'
 
 print(f'Running test_car.py v{__version__}')
 logger.info(f'Running test_car.py v{__version__}')
+logger.setLevel(logging.ERROR)
 
 testall = True
 run_test_switch = pytest.mark.skipif(not testall, reason='tests accomplished')
@@ -140,14 +142,14 @@ def test__try_set_charge_limit(car):
     assert car._try_set_charge_limit(77) is False
 
 
-@run_test_switch
-def test__try_wake_up(car):
-    response = dict(state='online')
-    car.func.wake_up = types.MethodType(lambda self: response, car.func)
-    car.sleep_between_func = 0.01
-    assert car._try_wake_up()
-    response = dict(state='asleep')
-    assert not car._try_wake_up()
+# @run_test_switch
+# def test__try_wake_up(car):
+#     response = dict(state='online')
+#     car.func.wake_up = types.MethodType(lambda self: response, car.func)
+#     car.sleep_between_func = 0.01
+#     assert car._try_wake_up()
+#     response = dict(state='asleep')
+#     assert not car._try_wake_up()
 
 
 @run_test_switch
@@ -161,15 +163,15 @@ def test_update_car(car):
     car.func.get_vehicle_state = types.MethodType(lambda self: resp, car.func)
     assert car.update_car()
 
-    def _try_wake_up(self):
-        raise ApiError('intentional error')
-    car._try_wake_up = types.MethodType(_try_wake_up, car)
-    assert car.update_car() is False
+    # def _try_wake_up(self):
+    #     raise ApiError('intentional error')
+    # car._try_wake_up = types.MethodType(_try_wake_up, car)
+    # assert car.update_car() is False
 
-    def _try_wake_up(self):
-        raise ValueError('intentional ValueError')
-    car._try_wake_up = types.MethodType(_try_wake_up, car)
-    assert car.update_car() is False
+    # def _try_wake_up(self):
+    #     raise ValueError('intentional ValueError')
+    # car._try_wake_up = types.MethodType(_try_wake_up, car)
+    # assert car.update_car() is False
 
 
 @run_test_switch
@@ -243,7 +245,7 @@ def test__start_car_charging(car):
     car = copy.deepcopy(car)
 
     #  settings for success --> True
-    car._try_wake_up = types.MethodType(lambda self: True, car)
+    # car._try_wake_up = types.MethodType(lambda self: True, car)
     car._try_set_charge_limit = types.MethodType(lambda self, x: True, car)
     car._try_start_charging = types.MethodType(lambda self: True, car)
     car.charging_flag = False
@@ -253,18 +255,18 @@ def test__start_car_charging(car):
     car.charging_flag = True
     assert car._start_car_charging() is False
 
-    # settings for ApiError --> False
-    def _try_wake_up(self):
-        raise ApiError('Inentional ApiError')
-    car._try_wake_up = types.MethodType(_try_wake_up, car)
-    assert car._start_car_charging() is False
+    # # settings for ApiError --> False
+    # def _try_wake_up(self):
+    #     raise ApiError('Inentional ApiError')
+    # car._try_wake_up = types.MethodType(_try_wake_up, car)
+    # assert car._start_car_charging() is False
 
-    # settings for AuthentificationError --> AuthentificationError
-    def _try_wake_up(self):
-        raise AuthenticationError('Intentional AuthenticationError')
-    car._try_wake_up = types.MethodType(_try_wake_up, car)
-    with pytest.raises(AuthenticationError, match='check credentials'):
-        car._start_car_charging()
+    # # settings for AuthentificationError --> AuthentificationError
+    # def _try_wake_up(self):
+    #     raise AuthenticationError('Intentional AuthenticationError')
+    # car._try_wake_up = types.MethodType(_try_wake_up, car)
+    # with pytest.raises(AuthenticationError, match='check credentials'):
+    #     car._start_car_charging()
 
 
 @run_test_switch
@@ -272,7 +274,7 @@ def test__stop_car_charging(car):
     car = copy.deepcopy(car)
 
     #  settings for success --> True
-    car._try_wake_up = types.MethodType(lambda self: True, car)
+    # car._try_wake_up = types.MethodType(lambda self: True, car)
     car._try_set_charge_limit = types.MethodType(lambda self, x: True, car)
     car.last_charge_limit_soc = 50
     car.charging_flag = True
@@ -284,18 +286,18 @@ def test__stop_car_charging(car):
     car.charging_flag = False
     assert car._stop_car_charging() is False
 
-    # settings for ApiError --> False
-    def _try_wake_up(self):
-        raise ApiError('Inentional ApiError')
-    car._try_wake_up = types.MethodType(_try_wake_up, car)
-    assert car._stop_car_charging() is False
+    # # settings for ApiError --> False
+    # def _try_wake_up(self):
+    #     raise ApiError('Inentional ApiError')
+    # car._try_wake_up = types.MethodType(_try_wake_up, car)
+    # assert car._stop_car_charging() is False
 
-    # settings for AuthentificationError --> AuthentificationError
-    def _try_wake_up(self):
-        raise AuthenticationError('Intentional AuthenticationError')
-    car._try_wake_up = types.MethodType(_try_wake_up, car)
-    with pytest.raises(AuthenticationError, match='check credentials'):
-        car._stop_car_charging()
+    # # settings for AuthentificationError --> AuthentificationError
+    # def _try_wake_up(self):
+    #     raise AuthenticationError('Intentional AuthenticationError')
+    # car._try_wake_up = types.MethodType(_try_wake_up, car)
+    # with pytest.raises(AuthenticationError, match='check credentials'):
+    #     car._stop_car_charging()
 
 
 @run_test_switch

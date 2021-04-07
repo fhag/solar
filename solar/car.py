@@ -33,7 +33,7 @@ from .definitions.access_data import EMAIL, PW, VIN, HOME
 from .definitions.logger_config import LOG_LEVEL
 from .send_status import send_status
 
-__version__ = '0.1.67'
+__version__ = '0.1.68'
 print(f'car v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -111,7 +111,6 @@ class Car(CarData):
 
     def _try_start_charging(self) -> bool:
         '''start_until car online'''
-        self._try_wake_up()
         for _ in range(self.ev_trials):
             response = self.func.start_charging()
             if response['result'] or response['reason'] == 'charging':
@@ -123,7 +122,6 @@ class Car(CarData):
 
     def _try_stop_charging(self) -> bool:
         '''stop_charging until car online'''
-        self._try_wake_up()
         for _ in range(self.ev_trials):
             response = self.func.stop_charging()
             if response['result'] or response['reason'] == 'not_charging':
@@ -135,7 +133,6 @@ class Car(CarData):
 
     def _try_set_charge_limit(self, charge_limit):
         '''remember old limit and set new limit with exception handling'''
-        self._try_wake_up()
         try:
             _charge_limit = int(float(charge_limit))
         except ValueError:
@@ -162,24 +159,24 @@ class Car(CarData):
             logger.error(ftext)
             return False
 
-    def _try_wake_up(self) -> dict:
-        '''wake up car until car online'''
-        for i in range(self.ev_trials):
-            response = self.func.wake_up()
-            logger.warning(response)
-            if response['state'].upper() != 'ASLEEP':
-                return response
-            time.sleep(self.sleep_between_func)
-        ftext = f'Could not wake up car: {response}'
-        logger.warning(ftext)
-        return dict()
+    # def _try_wake_up(self) -> dict:
+    #     '''wake up car until car online'''
+    #     for i in range(self.ev_trials):
+    #         response = self.func.wake_up()
+    #         logger.warning(response)
+    #         if response['state'].upper() != 'ASLEEP':
+    #             return response
+    #         time.sleep(self.sleep_between_func)
+    #     ftext = f'Could not wake up car: {response}'
+    #     logger.warning(ftext)
+    #     return dict()
 
     def update_car(self) -> bool:
         '''Update car instance with all car data and timestamp'''
         timestamps = list()
         try:
             attempt = 'wake_up'
-            data = self._try_wake_up()
+            data = self.func.wake_up()
             attempt = 'get_charge_state'
             data.update(self.func.get_charge_state())
             timestamps.append(data['timestamp'])
@@ -221,13 +218,12 @@ class Car(CarData):
 
         * car is close enough and last recent update is old enough
         '''
-        self._try_wake_up()
         elapsed_seconds = max(0, time.time() - self.timestamp)
         not_driving = self.shift_state != 'D'
         ftext = ('shift_state=%s, !driving=%s, battery_level=%2.0f' %
                  (self.shift_state, not_driving, self.battery_level))
         if elapsed_seconds < self._km_to_seconds() and not_driving:
-            logger.info('Car too far away: %.1f sec, elapsed=%.1f sec| %s',
+            logger.debug('Car too far away: %.1f sec, elapsed=%.1f sec| %s',
                          self._km_to_seconds(), elapsed_seconds, ftext)
             return False
         if elapsed_seconds < self.seconds_btw_updates and not_driving:
@@ -273,7 +269,7 @@ class Car(CarData):
                 writer.writerow(savedict)
         except (PermissionError, Exception) as err:
             ftext = f'Could not save charging_status: {err}'
-            logger.warning(ftext, exc_info=True)
+            logger.error(ftext, exc_info=True)
             self.send_status(ftext)
 
     def _get_charging_status(self):
@@ -290,15 +286,13 @@ class Car(CarData):
             self.charging_flag = (line.split(';')[1] == 'True')
             self.last_charge_limit_soc = int(line.split(';')[2])
         except (PermissionError, FileNotFoundError) as err:
-            ftext = f'Missing file {self.fname_charging_status!r}'
-            # ftext += f' \nCould not get charging_status: {err}'
-            logger.warning(ftext, exc_info=False)
+            ftext = f'File does not exist {self.fname_charging_status!r}'
+            logger.info(ftext, exc_info=False)
             self.send_status(ftext)
 
     def _start_car_charging(self) -> bool:
         '''start charging car with exception handling'''
         try:
-            self._try_wake_up()
             last_charge_limit = self.charge_limit_soc
             if self.last_charge_limit_soc == 0:
                 if self._try_set_charge_limit(self._get_new_soc_limit()):
@@ -326,7 +320,6 @@ class Car(CarData):
     def _stop_car_charging(self) -> bool:
         '''stop charging car with exception handling'''
         try:
-            self._try_wake_up()
             if self.last_charge_limit_soc > 0:
                 new_limit = self.last_charge_limit_soc
                 if self._try_set_charge_limit(new_limit):
