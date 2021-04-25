@@ -17,7 +17,7 @@ from .conftest import logger, HOME, carversion
 # pytest -v -rs tests/test_charge.py
 # pytest --cov-report html:cov_html --cov=arequests tests/test_charge.py
 
-__version__ = '0.1.68'
+__version__ = '0.1.70'
 
 print(f'Running test_car.py v{__version__}')
 logger.info(f'Running test_car.py v{__version__}')
@@ -161,17 +161,18 @@ def test_update_car(car):
     car.func.get_drive_state = types.MethodType(lambda self: resp, car.func)
     car.func.get_climate_state = types.MethodType(lambda self: resp, car.func)
     car.func.get_vehicle_state = types.MethodType(lambda self: resp, car.func)
+    car.func.get_vehicle_summary = types.MethodType(lambda self: resp, car.func)
     assert car.update_car()
 
-    # def _try_wake_up(self):
-    #     raise ApiError('intentional error')
-    # car._try_wake_up = types.MethodType(_try_wake_up, car)
-    # assert car.update_car() is False
+    def raise_exception():
+        raise ApiError('only for test')
+    car.func.get_drive_state = types.MethodType(raise_exception, car.func)
+    assert not car.update_car()
 
-    # def _try_wake_up(self):
-    #     raise ValueError('intentional ValueError')
-    # car._try_wake_up = types.MethodType(_try_wake_up, car)
-    # assert car.update_car() is False
+    def raise_exception():
+        raise KeyError('only for test')
+    car.func.get_drive_state = types.MethodType(raise_exception, car.func)
+    assert not car.update_car()
 
 
 @run_test_switch

@@ -33,7 +33,7 @@ from .definitions.access_data import EMAIL, PW, VIN, HOME
 from .definitions.logger_config import LOG_LEVEL
 from .send_status import send_status
 
-__version__ = '0.1.69'
+__version__ = '0.1.70'
 print(f'car v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -176,8 +176,9 @@ class Car(CarData):
         '''Update car instance with all car data and timestamp'''
         timestamps = list()
         try:
-            # attempt = 'wake_up'
-            # data = self.func.wake_up()
+            self.func.wake_up()
+            attempt = 'get_vehicle_summary'
+            data = self.func.get_vehicle_summary()
             attempt = 'get_charge_state'
             data.update(self.func.get_charge_state())
             timestamps.append(data['timestamp'])
@@ -192,8 +193,6 @@ class Car(CarData):
             timestamps.append(data['timestamp'])
             data.update(dict(data_ok=True))
             data.update(dict(timestamp=max(timestamps) / 1000))
-            # self.data = data  # for debugging
-            # logger.debug(data)
             keys = self.__dict__.keys()
             for key, value in data.items():
                 if key in keys:
