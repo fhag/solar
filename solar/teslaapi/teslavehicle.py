@@ -24,7 +24,7 @@ from teslapy import VehicleError
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-__version__ = '1.0.6'
+__version__ = '1.0.7'
 print(f'teslavehicle.py v{__version__}')
 
 
@@ -50,7 +50,8 @@ class Vehicle(teslapy.Vehicle):
     def wake_up(self) -> dict:
         '''Wake-up car'''
         timeout, interval, backoff = 100, 2, 1.2
-        logger.info(f'wake_up car with {timeout=!r} {interval=!r} {backoff=!r}')
+        logger.info(f'wake_up car with timeout={timeout!r} '
+                    f'interval={interval!r} backoff={backoff!r}')
         try:
             self.sync_wake_up(timeout=timeout,
                               interval=interval,
