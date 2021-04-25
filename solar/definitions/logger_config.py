@@ -47,12 +47,13 @@ solarlogger = logging.getLogger('solar')
 logger = logging.getLogger(__name__)
 logger.error('Kein Fehler')
 
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 print(__version__)
 
 loggerDict = logging.root.manager.loggerDict
 loggers = [name for name in loggerDict if 'solar' in name]
 loggers.append('teslapy')
+skip_loggers = ['solar.teslaapi', 'solar']
 for ilogger in loggers:
     print(ilogger)
     if isinstance(loggerDict[ilogger], logging.Logger):
@@ -60,8 +61,9 @@ for ilogger in loggers:
         handlers = loggerDict[ilogger].handlers
         for handler in handlers:
             loggerDict[ilogger].removeHandler(handler)
-        loggerDict[ilogger].addHandler(FILEHANDLER)
-        loggerDict[ilogger].addHandler(CONSOLE)
+        if ilogger not in skip_loggers:
+            loggerDict[ilogger].addHandler(FILEHANDLER)
+            loggerDict[ilogger].addHandler(CONSOLE)
         print(loggerDict[ilogger])
 
 
