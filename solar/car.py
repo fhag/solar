@@ -33,11 +33,12 @@ from .definitions.access_data import EMAIL, PW, VIN, HOME
 from .definitions.logger_config import LOG_LEVEL
 from .send_status import send_status
 
-__version__ = '0.1.68'
+__version__ = '0.1.69'
 print(f'car v{__version__}')
 
 logger = logging.getLogger(__name__)
 logger.setLevel(LOG_LEVEL)
+
 
 class Car(CarData):
     '''
@@ -146,7 +147,7 @@ class Car(CarData):
                                  'already' in response['reason']])
                 if condition:
                     logger.info('New soc limit=%s   -> %s', _charge_limit,
-                                 response)
+                                response)
                     self._reset_timestamp()
                     return True
                 time.sleep(self.sleep_between_func)
@@ -175,8 +176,8 @@ class Car(CarData):
         '''Update car instance with all car data and timestamp'''
         timestamps = list()
         try:
-            attempt = 'wake_up'
-            data = self.func.wake_up()
+            # attempt = 'wake_up'
+            # data = self.func.wake_up()
             attempt = 'get_charge_state'
             data.update(self.func.get_charge_state())
             timestamps.append(data['timestamp'])

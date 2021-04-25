@@ -18,13 +18,14 @@
 *class* used by *class* Car with method to manipulate car
 """
 import logging
+import time
 import teslapy
 from teslapy import VehicleError
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-__version__ = '1.0.7'
+__version__ = '1.0.8'
 print(f'teslavehicle.py v{__version__}')
 
 
@@ -47,11 +48,15 @@ class Vehicle(teslapy.Vehicle):
         self.wake_up()
         return self.get_vehicle_data()['drive_state']
 
-    def wake_up(self) -> dict:
+    def wake_up(self, last_wake_up=60) -> dict:
         '''Wake-up car'''
         timeout, interval, backoff = 100, 2, 1.2
-        logger.info(f'wake_up car with timeout={timeout!r} '
-                    f'interval={interval!r} backoff={backoff!r}')
+        elapsed_sec = time.time() - getattr(self, "last_wake_up", 0)
+        if elapsed_sec > last_wake_up:
+            self['state'] = 'probably asleep'
+            self.last_wake_up = time.time()
+            logger.info('force wake up')
+        logger.info(f'status {self["state"]!r} - {elapsed_sec:3.0f} sec old')
         try:
             self.sync_wake_up(timeout=timeout,
                               interval=interval,
@@ -59,6 +64,8 @@ class Vehicle(teslapy.Vehicle):
         except VehicleError as err:
             logger.ERROR(f'Unable to wake up car due to {err}')
             return {'state': 'ASLEEP'}
+        logger.info(f'car "AWAKE" by wake_up with timeout={timeout!r} '
+                    f'interval={interval!r} backoff={backoff!r}')
         return {'state': 'AWAKE'}
 
     @property
