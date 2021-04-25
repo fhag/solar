@@ -23,7 +23,8 @@ import os
 from datetime import datetime
 import teslapy
 
-__version__ = '0.1.7'
+__version__ = '1.0.4'
+print(__version__)
 
 LOGGER_FNAME = f'solar/logs/main_{datetime.now():%Y_%m_%d_%H%M}.log'
 LOG_LEVEL = logging.DEBUG
@@ -47,15 +48,14 @@ solarlogger = logging.getLogger('solar')
 logger = logging.getLogger(__name__)
 logger.error('Kein Fehler')
 
-__version__ = '1.0.3'
-print(__version__)
+
 
 loggerDict = logging.root.manager.loggerDict
 loggers = [name for name in loggerDict if 'solar' in name]
 loggers.append('teslapy')
 skip_loggers = ['solar.teslaapi', 'solar']
 for ilogger in loggers:
-    print(ilogger)
+    # print(ilogger)
     if isinstance(loggerDict[ilogger], logging.Logger):
         loggerDict[ilogger].setLevel(LOG_LEVEL)
         handlers = loggerDict[ilogger].handlers
@@ -64,7 +64,7 @@ for ilogger in loggers:
         if ilogger not in skip_loggers:
             loggerDict[ilogger].addHandler(FILEHANDLER)
             loggerDict[ilogger].addHandler(CONSOLE)
-        print(loggerDict[ilogger])
+        # print(loggerDict[ilogger])
 
 
 class Filter():
