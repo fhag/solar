@@ -20,12 +20,13 @@
 import logging
 import time
 import teslapy
+import requests
 from teslapy import VehicleError
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-__version__ = '1.0.8'
+__version__ = '1.0.9'
 print(f'teslavehicle.py v{__version__}')
 
 
@@ -61,7 +62,7 @@ class Vehicle(teslapy.Vehicle):
             self.sync_wake_up(timeout=timeout,
                               interval=interval,
                               backoff=backoff)
-        except VehicleError as err:
+        except (VehicleError, requests.exceptions.RequestException) as err:
             logger.error(f'Unable to wake up car due to {err}')
             return {'state': 'ASLEEP'}
         logger.info(f'car "AWAKE" by wake_up with timeout={timeout!r} '
@@ -98,7 +99,7 @@ class Vehicle(teslapy.Vehicle):
         self.wake_up()
         try:
             self.command('START_CHARGE')
-        except VehicleError as err:
+        except (VehicleError, requests.exceptions.RequestException) as err:
             return dict(result=False, reason=str(err))
         else:
             return dict(result=True, reason='')
@@ -108,7 +109,7 @@ class Vehicle(teslapy.Vehicle):
         self.wake_up()
         try:
             self.command('STOP_CHARGE')
-        except VehicleError as err:
+        except (VehicleError, requests.exceptions.RequestException) as err:
             return dict(result=False, reason=str(err))
         else:
             return dict(result=True, reason='')
@@ -121,7 +122,7 @@ class Vehicle(teslapy.Vehicle):
             kwargs = dict(percent=percentage)
             try:
                 self.command('CHANGE_CHARGE_LIMIT', **kwargs)
-            except VehicleError as err:
+            except (VehicleError, requests.exceptions.RequestException) as err:
                 return dict(result=False, reason=str(err))
             else:
                 return dict(result=True, reason='')
@@ -136,7 +137,7 @@ class Vehicle(teslapy.Vehicle):
         self.wake_up()
         try:
             self.command('CLIMATE_ON')
-        except VehicleError as err:
+        except (VehicleError, requests.exceptions.RequestException) as err:
             return dict(result=False, reason=str(err))
         else:
             return dict(result=True, reason='')
@@ -146,7 +147,7 @@ class Vehicle(teslapy.Vehicle):
         self.wake_up()
         try:
             self.command('CLIMATE_OFF')
-        except VehicleError as err:
+        except (VehicleError, requests.exceptions.RequestException) as err:
             return dict(result=False, reason=str(err))
         else:
             return dict(result=True, reason='')
@@ -166,7 +167,7 @@ class Vehicle(teslapy.Vehicle):
                   'passenger_temp': passenger_temperature}
         try:
             self.command('CHANGE_CLIMATE_TEMPERATURE_SETTING', **kwargs)
-        except VehicleError as err:
+        except (VehicleError, requests.exceptions.RequestException) as err:
             return dict(result=False, reason=str(err))
         else:
             return dict(result=True, reason='')
@@ -176,7 +177,7 @@ class Vehicle(teslapy.Vehicle):
         self.wake_up()
         try:
             self.command('CHARGE_PORT_DOOR_OPEN')
-        except VehicleError as err:
+        except (VehicleError, requests.exceptions.RequestException) as err:
             return dict(result=False, reason=str(err))
         else:
             return dict(result=True, reason='')
@@ -186,7 +187,7 @@ class Vehicle(teslapy.Vehicle):
         self.wake_up()
         try:
             self.command('CHARGE_PORT_DOOR_CLOSE')
-        except VehicleError as err:
+        except (VehicleError, requests.exceptions.RequestException) as err:
             return dict(result=False, reason=str(err))
         else:
             return dict(result=True, reason='')
