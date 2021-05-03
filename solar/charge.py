@@ -53,7 +53,7 @@ from .definitions.access_data import EMAIL, PW, VIN, HOME
 from .definitions.logger_config import LOG_LEVEL
 from .send_status import send_status
 
-__version__ = '0.1.65'
+__version__ = '0.1.66'
 print(f'charge v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -276,7 +276,7 @@ class ChargeEV(ChargeDefaults):
             print(f'User abort - normal break : {err}')
             logger.error('User abort - normal break %s', err)
         except Exception as err:
-            print('ERROR break')
+            print(f'ERROR break {err!r}')
             logger.critical(err, exc_info=True)
         finally:
             self.car.stop_charging()

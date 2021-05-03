@@ -62,7 +62,7 @@ class Vehicle(teslapy.Vehicle):
                               interval=interval,
                               backoff=backoff)
         except VehicleError as err:
-            logger.ERROR(f'Unable to wake up car due to {err}')
+            logger.error(f'Unable to wake up car due to {err}')
             return {'state': 'ASLEEP'}
         logger.info(f'car "AWAKE" by wake_up with timeout={timeout!r} '
                     f'interval={interval!r} backoff={backoff!r}')
