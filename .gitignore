@@ -12,6 +12,7 @@
 # skip all temporary and old files and directories
 testmain.py
 temp*.py
+test*.*
 tmp*.py
 **/temp/**
 **/tmp/**
@@ -33,6 +34,9 @@ solar/teslapy/**
 make.bat
 Makefile
 m.bat
+
+docs/**
+source/**
 
 .pytest_cache/**
 *.pyproj
