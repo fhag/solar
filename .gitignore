@@ -28,15 +28,13 @@ htmlcov/**
 # source/**
 .vscode/**
 # only upload docs in gh-pages branch
-# docs/**
+docs/**
 solar/teslapy/**
 
 make.bat
 Makefile
 m.bat
 
-docs/**
-source/**
 
 .pytest_cache/**
 *.pyproj

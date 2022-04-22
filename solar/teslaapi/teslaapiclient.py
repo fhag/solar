@@ -21,13 +21,13 @@ methods for access to Tesla API
 """
 
 import logging
-import requests
+# import requests
 from requests.exceptions import HTTPError
-from datetime import datetime, timedelta
+# from datetime import datetime, timedelta
 import teslapy
 from .teslavehicle import Vehicle
 
-__version__ = '1.0.3'
+__version__ = '1.0.4'
 print(f'teslaapi.py v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -40,7 +40,7 @@ class TeslaApiClient(teslapy.Tesla):
     methods for access to Tesla API
     '''
     def __init__(self, email, password):
-        super().__init__(email, password)
+        super().__init__(email)
         try:
             self.fetch_token()
         except HTTPError:
