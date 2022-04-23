@@ -25,7 +25,7 @@ tmp*.py
 
 # skip some folders
 htmlcov/**
-# source/**
+source/**
 .vscode/**
 # only upload docs in gh-pages branch
 docs/**
@@ -51,3 +51,5 @@ ee.pdf
 cache.json
 **.code-workspace
 docs/docs
+solar/solar_log.txt
+**/test**
