@@ -33,7 +33,7 @@ from .definitions.access_data import EMAIL, PW, VIN, HOME
 from .definitions.logger_config import LOG_LEVEL
 from .send_status import send_status
 
-__version__ = '0.1.71'
+__version__ = '1.1.50'
 print(f'car v{__version__}')
 
 logger = logging.getLogger(__name__)

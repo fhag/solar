@@ -9,7 +9,7 @@ from collections import deque
 from datetime import datetime, timedelta
 from .access_data import HOME, E3DC_IP
 
-__version__ = '0.1.38'
+__version__ = '1.1.40'
 print(f'pvdataclasses.py v{__version__}')
 
 

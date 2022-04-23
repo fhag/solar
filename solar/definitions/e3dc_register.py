@@ -22,7 +22,7 @@ Internal mapping data for E3DC modbus based on:
 
 """
 
-__version__ = '0.0.5'
+__version__ = '1.1.40'
 
 config = [
         {

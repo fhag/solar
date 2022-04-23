@@ -23,7 +23,7 @@ import os
 from datetime import datetime
 import teslapy
 
-__version__ = '1.0.4'
+__version__ = '1.1.40'
 print(__version__)
 
 LOGGER_FNAME = f'solar/logs/main_{datetime.now():%Y_%m_%d_%H%M}.log'

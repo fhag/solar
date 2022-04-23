@@ -26,7 +26,7 @@ from pymodbus.client.sync import ModbusTcpClient
 from .definitions.e3dc_register import conf
 from .definitions.pvdataclasses import PVStatus, ModbusDefaults
 
-__version__ = '0.0.16'
+__version__ = '1.1.50'
 print(f'chargemodbus.py v{__version__}')
 
 logger = logging.getLogger(__name__)

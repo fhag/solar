@@ -51,7 +51,7 @@ except ModuleNotFoundError:
 
     access = AccessDummy()
 
-__version__ = '0.1.14'
+__version__ = '1.1.50'
 print(f'send_status v{__version__}')
 
 logger = logging.getLogger(__name__)

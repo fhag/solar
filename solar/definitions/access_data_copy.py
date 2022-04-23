@@ -3,7 +3,7 @@
 Mandatory access data for E3DC and Tesla Car
 Please update file and rename it to 'access_data.py'
 """
-__version__ = '0.1.1'
+__version__ = '1.1.40'
 
 #  Access data for E3DC
 E3DC_IP = '192.168.0.0'  # IP Address of E3DC S10 system in local network

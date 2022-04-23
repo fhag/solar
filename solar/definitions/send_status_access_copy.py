@@ -2,7 +2,7 @@
 """
 Access data for Email notification
 """
-__version__ = '0.0.2'
+__version__ = '1.1.40'
 
 # defaults for sending status mails
 
