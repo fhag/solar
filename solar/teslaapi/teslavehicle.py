@@ -26,7 +26,7 @@ from teslapy import VehicleError
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-__version__ = '1.0.9'
+__version__ = '1.1.10'
 print(f'teslavehicle.py v{__version__}')
 
 

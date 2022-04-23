@@ -3,7 +3,7 @@
 Created on Fri Apr 27 17:14:23 2019
 @author: annet
 """
-__version__ = '1.0.2'
+__version__ = '1.1.10'
 
 import logging
 from .teslaapiclient import TeslaApiClient

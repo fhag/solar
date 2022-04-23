@@ -16,8 +16,8 @@
 #
 
 """
-Class TeslaApiClient with methods for authentification and get and post
-methods for access to Tesla API
+Class TeslaApiClient as teslapy wrapper with methods
+for authentification and get and post methods for access to Tesla API
 """
 
 import logging
@@ -26,13 +26,16 @@ from requests.exceptions import HTTPError
 # from datetime import datetime, timedelta
 import teslapy
 from .teslavehicle import Vehicle
+from solar.send_status import send_status
 
-__version__ = '1.0.4'
+__version__ = '1.1.10'
 print(f'teslaapi.py v{__version__}')
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-
+HTTPErrorMsg = 'Tesal API not initialized: ' \
+    'create new cache.json with credentials'
+HTTPErrorSubj = 'Create new credentials for login into TESLA API'
 
 class TeslaApiClient(teslapy.Tesla):
     '''
@@ -40,10 +43,11 @@ class TeslaApiClient(teslapy.Tesla):
     methods for access to Tesla API
     '''
     def __init__(self, email, password):
-        super().__init__(email)
+        super().__init__(email, retry=5, timeout=10)
         try:
             self.fetch_token()
         except HTTPError:
+            send_status(HTTPErrorMsg, HTTPErrorSubj)
             raise AuthenticationError('Check credentials')
         logger.info('TeslaApiClient for %s initialised', email)
 
