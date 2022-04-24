@@ -1,17 +1,14 @@
 {
-"seconds_btw_updates": 300,
-"fname_charging_status": "solar/data/charging_flag.csv",
-"soc_minimum_start": 10,
-"soc_minimum_stop": 5,
-"evsoc_std": 70,
-
-"evsoc_limit_low": 80,
-"evstart_power_low": -3000,
-"evstop_power_low": 7000,
-
-"evsoc_limit_high": 90,
-"evstart_power_high": -5000,
-"evstop_power_high": 1000,
-"__version__": "0.1.8"
+    "seconds_btw_updates": "300",
+    "fname_charging_status": "solar/data/charging_flag.csv",
+    "soc_minimum_start": "11",
+    "soc_minimum_stop": "5",
+    "evsoc_std": "70",
+    "evsoc_limit_low": "80",
+    "evstart_power_low": "-3000",
+    "evstop_power_low": "7000",
+    "evsoc_limit_high": "90",
+    "evstart_power_high": "-5000",
+    "evstop_power_high": "1000",
+    "__version__": "0.1.9"
 }
-

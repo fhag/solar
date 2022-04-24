@@ -7,7 +7,7 @@ Web Interface zur Einstellung der Parameter
 @author: annet
 """
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
 import json
 import os
@@ -125,7 +125,8 @@ def home():
                            version=version)
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port='8888', debug=False)
+    # app.run(host='127.0.0.1', port='8888', debug=True)
+    app.run()
     if False: # for debugging
         defaults = Defaults(defaults='test.json')
         self = defaults
