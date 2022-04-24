@@ -53,3 +53,5 @@ cache.json
 docs/docs
 solar/solar_log.txt
 **/test**
+**/bootstrap**
+**/images/unused/**
