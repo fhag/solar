@@ -143,7 +143,7 @@ if __name__ == '__main__':
     hostip = get_ip()
     port = '8888'
     print(f'connect to {hostip}:{port}')
-    app.run(host=hostip, port=port, debug=False)
+    app.run(host=hostip, port=port, ssl_context='adhoc', debug=False)
     # app.run()
     if False: # for debugging
         defaults = Defaults(defaults='test.json')
