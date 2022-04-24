@@ -1,0 +1,42 @@
+{
+    "seconds_btw_updates": [
+        "<b>{:0.0f}</b> seconds between updates of car values",
+        300
+    ],
+    "soc_minimum_start": [
+        "Start charging if house battery SOC >= <b>{:0.0f}%</b>",
+        10
+    ],
+    "soc_minimum_stop": [
+        "Stop charging if house battery SOC <= <b>{:0.0f}%</b>",
+        5
+    ],
+    "evsoc_std": [
+        "Standard car SOC <b>{:0.0f}%</b>",
+        70
+    ],
+    "evsoc_limit_low": [
+        "Start lower charging if car SOC < <b>{:0.0f}%</b>",
+        80
+    ],
+    "evstart_power_low": [
+        "Start lower charging if net flow < <b>{:0,.0f}kW</b>",
+        -3000
+    ],
+    "evstop_power_low": [
+        "Stop lower charging if net flow > <b>{:0,.0f}kw</b>",
+        7000
+    ],
+    "evsoc_limit_high": [
+        "Start higher charging until <b>{:.0f}%</b> car SOC",
+        90
+    ],
+    "evstart_power_high": [
+        "Start higher charging if net flow < <b>{:0,.0f}kW</b>",
+        -5000
+    ],
+    "evstop_power_high": [
+        "Stop higher charging if net flow > <b>{:0,.0f}kw</b>",
+        1000
+    ]
+}
