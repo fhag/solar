@@ -7,9 +7,10 @@ Web Interface zur Einstellung der Parameter
 @author: annet
 """
 
-__version__ = '0.0.2'
+__version__ = '0.0.3'
 
 import json
+import socket
 import os
 from flask import Flask, render_template, request, url_for, flash, redirect
 from pathlib import Path
@@ -85,6 +86,20 @@ class Defaults():
         return label_list
 
 
+
+def get_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.settimeout(0)
+    try:
+        # doesn't even have to be reachable
+        s.connect(('10.255.255.255', 1))
+        IP = s.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
+
 app=Flask(__name__)
 app.config['SECRET_KEY'] = seckey
 
@@ -99,7 +114,7 @@ def home():
         print(newdata['button'])
         if newdata['button'] == 'reset':
             newdata.update(self.edit_value)
-            newdata['__version__'] = '0.0.0'
+            newdata['__version__'] = '0.1.0'
         del newdata['button']
         keys = list(newdata.keys())
         results = [str(newdata[key]) == str(self.data[key])
@@ -125,8 +140,11 @@ def home():
                            version=version)
 
 if __name__ == '__main__':
-    # app.run(host='127.0.0.1', port='8888', debug=True)
-    app.run()
+    hostip = get_ip()
+    port = '8888'
+    print(f'connect to {hostip}:{port}')
+    app.run(host=hostip, port=port, debug=False)
+    # app.run()
     if False: # for debugging
         defaults = Defaults(defaults='test.json')
         self = defaults
