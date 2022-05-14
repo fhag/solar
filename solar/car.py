@@ -29,11 +29,11 @@ import logging
 from requests.exceptions import HTTPError
 from .teslaapi import TeslaApiClient, AuthenticationError, ApiError
 from .definitions.pvdataclasses import CarData
-from .definitions.access_data import EMAIL, PW, VIN, HOME
+from .definitions.access_data import EMAIL, VIN, HOME
 # from .definitions.logger_config import LOG_LEVEL
 from .send_status import send_status
 
-__version__ = '1.1.51'
+__version__ = '1.1.52'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -48,13 +48,13 @@ class Car(CarData):
     * home = (latitude, longitude) of car's home location
     '''
 
-    def __init__(self, email, pw, vin, home):
+    def __init__(self, email, vin, home):
         super().__init__(home)
         self.__version__ = __version__
         self.data = None
         logger.info('car.py v%s', __version__)
         try:
-            self.client = TeslaApiClient(email, pw)
+            self.client = TeslaApiClient(email)
             self.vehicles = self.client.list_vehicles()
             self.func = [v for v in self.vehicles if v.vin == vin][0]
             self.send_status = send_status

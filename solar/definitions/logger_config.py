@@ -30,7 +30,6 @@ def list_loggers(loggers):
     loggerDict = logging.root.manager.loggerDict
     loggerlen = max([len(lgs) for lgs in loggers]) + 3
     for ilogger in loggers:
-        print(f'{ilogger:{loggerlen}} : {loggerDict[ilogger]}')
         if isinstance(loggerDict[ilogger], logging.Logger):
             for handler in loggerDict[ilogger].handlers:
                 print(f'   {ilogger:{loggerlen - 3}} : {handler}')
@@ -42,8 +41,8 @@ LOG_LEVEL = logging.DEBUG
 FILEHANDLER = logging.FileHandler(os.path.normpath(LOGGER_FNAME), mode='w')
 FILEHANDLER.setLevel(LOG_LEVEL)
 FILE_FORMATTER = logging.Formatter(
-    '%(asctime)s|%(filename)28s|%(levelname)7s|%(funcName)25s|' +
-    '%(lineno)3d |%(message)s',
+    '%(asctime)s|%(filename)28s|%(levelname)8s|%(funcName)25s|' +
+    '%(lineno)3d| %(message)s',
     "%d%b%y %H:%M.%S")
 FILEHANDLER.setFormatter(FILE_FORMATTER)
 

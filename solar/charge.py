@@ -49,15 +49,13 @@ from collections import namedtuple
 from .definitions.pvdataclasses import ChargeDefaults, PVStatus
 from .chargemodbus import ChargeModbus, Modbus_exceptions
 from .car import Car
-from .definitions.access_data import EMAIL, PW, VIN, HOME
-from .definitions.logger_config import LOG_LEVEL
+from .definitions.access_data import EMAIL, VIN, HOME
 from .send_status import send_status
 
-__version__ = '1.1.50'
-print(f'charge v{__version__}')
+__version__ = '1.1.51'
+print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
-logger.setLevel(LOG_LEVEL)
 
 
 class ChargeEV(ChargeDefaults):
@@ -68,14 +66,19 @@ class ChargeEV(ChargeDefaults):
         self.__version__ = __version__
         self.defaults_version = ''
         self.check_internet()
-        self.modbus = ChargeModbus()
-        self.car = Car(EMAIL, PW, VIN, HOME)
         self.send_status = send_status
-        msg = f'charge.py v{__version__} with \
-        car.py v{self.car.__version__} successfully started'
-        self.send_status(msg)
-        logger.info(' __init__: charge.py v%s completed '.center(100, '-'),
-                    __version__)
+        self.modbus = ChargeModbus()
+        if self.modbus.client.is_socket_open():
+            self.car = Car(EMAIL, VIN, HOME)
+            msg = f'charge.py v{__version__} with \
+            car.py v{self.car.__version__} successfully started'
+            self.send_status(msg)
+            logger.info(msg)
+        else:
+            self.send_status(msgstr='Check local network - could not establish'
+                             ' connection  to E3DC - not responding!',
+                             subject='MODBUS ERROR - check network')
+
 
     def _update_default_values(self) -> None:
         '''Read updated values if available'''

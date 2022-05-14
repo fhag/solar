@@ -51,11 +51,10 @@ except ModuleNotFoundError:
 
     access = AccessDummy()
 
-__version__ = '1.1.50'
-print(f'send_status v{__version__}')
+__version__ = '1.1.51'
+print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 def send_status(msgstr: str, subject: str = None) -> str:

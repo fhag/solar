@@ -26,7 +26,7 @@ import teslapy
 from .teslavehicle import Vehicle
 from ..send_status import send_status
 
-__version__ = '1.1.11'
+__version__ = '1.1.12'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ class TeslaApiClient(teslapy.Tesla):
     Class TeslaApiClient with authentification, get and post
     methods for access to Tesla API
     '''
-    def __init__(self, email, password):
+    def __init__(self, email):
         super().__init__(email, retry=5, timeout=10)
         try:
             self.fetch_token()

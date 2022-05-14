@@ -26,11 +26,10 @@ from pymodbus.client.sync import ModbusTcpClient
 from .definitions.e3dc_register import conf
 from .definitions.pvdataclasses import PVStatus, ModbusDefaults
 
-__version__ = '1.1.50'
-print(f'chargemodbus.py v{__version__}')
+__version__ = '1.1.51'
+print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 class ChargeModbus(ModbusDefaults):
@@ -41,12 +40,19 @@ class ChargeModbus(ModbusDefaults):
         assert self._tcp_ip
         super().__post_init__()
         self.client = ModbusTcpClient(self._tcp_ip)
-        self.client.connect()
+        connection = self.client.connect()
         self.conf = conf
         self._functions = {'String': self._to_str, 'Int32': self._to_int32,
                            'Int8x2': self._to_int8x2, 'Hex': self._to_hex,
                            'EMS': self._to_EMS}
-        logger.warning('ChargeModbus initialised and active')
+        if connection:
+            logger.debug(f'modbus connection with '
+                         f'{f"{self.client.host}:{self.client.port}"!r}'
+                         ' established')
+            logger.warning('ChargeModbus initialised and active')
+        else:
+            logger.critical(f'No modbus connection to {self._tcp_ip!r} '
+                            'could be established - check local connection')
 
     @staticmethod
     def _to_str(regs: list, _key: int) -> (str, str):
