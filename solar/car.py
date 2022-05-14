@@ -33,7 +33,7 @@ from .definitions.access_data import EMAIL, VIN, HOME
 # from .definitions.logger_config import LOG_LEVEL
 from .send_status import send_status
 
-__version__ = '1.1.52'
+__version__ = '1.1.53'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -52,7 +52,7 @@ class Car(CarData):
         super().__init__(home)
         self.__version__ = __version__
         self.data = None
-        logger.info('car.py v%s', __version__)
+        logger.info('%s  v%s', __name__, __version__)
         try:
             self.client = TeslaApiClient(email)
             self.vehicles = self.client.list_vehicles()

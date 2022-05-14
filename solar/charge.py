@@ -52,7 +52,7 @@ from .car import Car
 from .definitions.access_data import EMAIL, VIN, HOME
 from .send_status import send_status
 
-__version__ = '1.1.51'
+__version__ = '1.1.52'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -69,11 +69,16 @@ class ChargeEV(ChargeDefaults):
         self.send_status = send_status
         self.modbus = ChargeModbus()
         if self.modbus.client.is_socket_open():
-            self.car = Car(EMAIL, VIN, HOME)
-            msg = f'charge.py v{__version__} with \
-            car.py v{self.car.__version__} successfully started'
-            self.send_status(msg)
-            logger.info(msg)
+            try:
+                self.car = Car(EMAIL, VIN, HOME)
+            except (AttributeError, Exception) as err:
+                logger.info('No connection to tesla car possible - '
+                            f'check credentials \n   --> [{err!r}]')
+            else:
+                msg = f'charge.py v{__version__} with \
+                car.py v{self.car.__version__} successfully started'
+                self.send_status(msg)
+                logger.info(msg)
         else:
             self.send_status(msgstr='Check local network - could not establish'
                              ' connection  to E3DC - not responding!',
