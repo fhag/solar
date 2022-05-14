@@ -30,14 +30,13 @@ from requests.exceptions import HTTPError
 from .teslaapi import TeslaApiClient, AuthenticationError, ApiError
 from .definitions.pvdataclasses import CarData
 from .definitions.access_data import EMAIL, PW, VIN, HOME
-from .definitions.logger_config import LOG_LEVEL
+# from .definitions.logger_config import LOG_LEVEL
 from .send_status import send_status
 
-__version__ = '1.1.50'
-print(f'car v{__version__}')
+__version__ = '1.1.51'
+print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
-logger.setLevel(LOG_LEVEL)
 
 
 class Car(CarData):
@@ -69,8 +68,7 @@ class Car(CarData):
             send_status(err)
         else:
             ftext = f' Car v{__version__} for {vin} initialized and started '
-            ftext = ftext.center(100, '-')
-            print(ftext)
+            print(ftext.center(100, '-'))
             logger.info(ftext)
 
     def _km_from_home(self) -> float:

@@ -21,21 +21,20 @@ for authentification and get and post methods for access to Tesla API
 """
 
 import logging
-# import requests
 from requests.exceptions import HTTPError
-# from datetime import datetime, timedelta
 import teslapy
 from .teslavehicle import Vehicle
-from solar.send_status import send_status
+from ..send_status import send_status
 
-__version__ = '1.1.10'
-print(f'teslaapi.py v{__version__}')
+__version__ = '1.1.11'
+print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+
 HTTPErrorMsg = 'Tesal API not initialized: ' \
     'create new cache.json with credentials'
 HTTPErrorSubj = 'Create new credentials for login into TESLA API'
+
 
 class TeslaApiClient(teslapy.Tesla):
     '''

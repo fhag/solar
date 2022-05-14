@@ -24,10 +24,9 @@ import requests
 from teslapy import VehicleError
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
-__version__ = '1.1.10'
-print(f'teslavehicle.py v{__version__}')
+__version__ = '1.1.11'
+print(f'{__name__:40s} v{__version__}')
 
 
 class Vehicle(teslapy.Vehicle):

@@ -21,10 +21,20 @@ Created on Thu Nov  7 13:59:26 2019
 import logging
 import os
 from datetime import datetime
-import teslapy
+# import teslapy
 
 __version__ = '1.1.40'
-print(__version__)
+print(f'{__name__:40s} v{__version__}')
+
+def list_loggers(loggers):
+    loggerDict = logging.root.manager.loggerDict
+    loggerlen = max([len(lgs) for lgs in loggers]) + 3
+    for ilogger in loggers:
+        print(f'{ilogger:{loggerlen}} : {loggerDict[ilogger]}')
+        if isinstance(loggerDict[ilogger], logging.Logger):
+            for handler in loggerDict[ilogger].handlers:
+                print(f'   {ilogger:{loggerlen - 3}} : {handler}')
+
 
 LOGGER_FNAME = f'solar/logs/main_{datetime.now():%Y_%m_%d_%H%M}.log'
 LOG_LEVEL = logging.DEBUG
@@ -32,7 +42,7 @@ LOG_LEVEL = logging.DEBUG
 FILEHANDLER = logging.FileHandler(os.path.normpath(LOGGER_FNAME), mode='w')
 FILEHANDLER.setLevel(LOG_LEVEL)
 FILE_FORMATTER = logging.Formatter(
-    '%(asctime)s|%(filename)24s|%(levelname)7s|%(funcName)25s|' +
+    '%(asctime)s|%(filename)28s|%(levelname)7s|%(funcName)25s|' +
     '%(lineno)3d |%(message)s',
     "%d%b%y %H:%M.%S")
 FILEHANDLER.setFormatter(FILE_FORMATTER)
@@ -40,31 +50,32 @@ FILEHANDLER.setFormatter(FILE_FORMATTER)
 CONSOLE = logging.StreamHandler()
 CONSOLE.setLevel(LOG_LEVEL)
 CONSOLE_FORMATTER = logging.Formatter(
-    '%(name)-12s: %(levelname)-8s %(message)s')
+    '%(asctime)s|%(name)-25s: %(levelname)-8s %(message)s')
 CONSOLE.setFormatter(CONSOLE_FORMATTER)
 
 
 solarlogger = logging.getLogger('solar')
 logger = logging.getLogger(__name__)
-logger.error('Kein Fehler')
-
+logger.warning('Logger test ohne Filehandler - kein Fehler')
 
 
 loggerDict = logging.root.manager.loggerDict
 loggers = [name for name in loggerDict if 'solar' in name]
 loggers.append('teslapy')
 skip_loggers = ['solar.teslaapi', 'solar']
-for ilogger in loggers:
-    # print(ilogger)
-    if isinstance(loggerDict[ilogger], logging.Logger):
-        loggerDict[ilogger].setLevel(LOG_LEVEL)
-        handlers = loggerDict[ilogger].handlers
-        for handler in handlers:
-            loggerDict[ilogger].removeHandler(handler)
-        if ilogger not in skip_loggers:
-            loggerDict[ilogger].addHandler(FILEHANDLER)
-            loggerDict[ilogger].addHandler(CONSOLE)
-        # print(loggerDict[ilogger])
+for logger_name in (set(loggers) - set(skip_loggers)):
+    print(logger_name)
+    ilogger = loggerDict[logger_name]
+    if isinstance(ilogger, logging.Logger):
+        ilogger.setLevel(LOG_LEVEL)
+        # handlers = loggerDict[logger_name].handlers
+        # for handler in handlers:
+        #     ilogger.removeHandler(handler)
+        ilogger.handlers.clear()
+        if logger_name not in skip_loggers:
+            ilogger.addHandler(FILEHANDLER)
+            ilogger.addHandler(CONSOLE)
+logger.error('Logger test mit Filehandler - kein Fehler - 2')
 
 
 class Filter():
@@ -88,10 +99,3 @@ class Filter():
         return record.name[self.nlen] == "."
 
 
-def list_loggers(loggers):
-    loggerDict = logging.root.manager.loggerDict
-    loggerlen = max([len(lgs) for lgs in loggers]) + 3
-    for ilogger in loggers:
-        print(f'{ilogger:{loggerlen}} : {loggerDict[ilogger]}')
-        for handler in loggerDict[ilogger].handlers:
-            print(f'   {ilogger:{loggerlen - 3}} : {handler}')
