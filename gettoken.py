@@ -14,9 +14,12 @@ __version__ = '0.0.1'
 
 email = 'gerard.fischer@gmx.ch'
 
+cache_file = 'test.json'
+cache_file = 'cache.json'
+
 if __name__ == '__main__':
     print('run')
-    with teslapy.Tesla(email, cache_file='test.json') as tesla:
+    with teslapy.Tesla(email, cache_file=cache_file) as tesla:
         vehicles = tesla.vehicle_list()
         vehicles[0].sync_wake_up()
         # vehicles[0].command('ACTUATE_TRUNK', which_trunk='front')
