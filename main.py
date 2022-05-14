@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Oct 20 08:49:35 2019
+Main program to start solar power monitoring and charging car if enough
+solar power available
 
-@author: annet
+@author: gfi
 """
 import logging
 from solar.charge import ChargeEV
-from solar.definitions.logger_config import FILEHANDLER, CONSOLE, LOG_LEVEL
+from solar.definitions.logger_config import logger
+
 
 NAME = 'solar'
-logger = logging.getLogger(NAME)
+logger.setLevel(logging.DEBUG)
 
-__version__ = '1.0.2'
-print(__version__)
+__version__ = '1.0.4'
+print(f'{__name__:40s} v{__version__}')
 
 if __name__ == '__main__':
-    print(f'main v{__version__}')
     ev = ChargeEV()
     ev.run()
