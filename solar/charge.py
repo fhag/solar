@@ -52,7 +52,7 @@ from .car import Car
 from .definitions.access_data import EMAIL, VIN, HOME
 from .send_status import send_status
 
-__version__ = '1.1.52'
+__version__ = '1.1.53'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -83,6 +83,7 @@ class ChargeEV(ChargeDefaults):
             self.send_status(msgstr='Check local network - could not establish'
                              ' connection  to E3DC - not responding!',
                              subject='MODBUS ERROR - check network')
+            raise ConnectionError('No modbus connection')
 
 
     def _update_default_values(self) -> None:

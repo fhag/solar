@@ -26,14 +26,14 @@ import os
 import csv
 import json
 import logging
-from requests.exceptions import HTTPError
+from requests.exceptions import HTTPError, ConnectionError
 from .teslaapi import TeslaApiClient, AuthenticationError, ApiError
 from .definitions.pvdataclasses import CarData
 from .definitions.access_data import EMAIL, VIN, HOME
 # from .definitions.logger_config import LOG_LEVEL
 from .send_status import send_status
 
-__version__ = '1.1.53'
+__version__ = '1.1.54'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -63,7 +63,7 @@ class Car(CarData):
             ftext = 'Unknown car with VIN:%s' % vin
             logger.critical(ftext)
             send_status(ftext)
-        except AuthenticationError as err:
+        except (AuthenticationError, ConnectionError) as err:
             logger.critical(err)
             send_status(err)
         else:
@@ -100,6 +100,8 @@ class Car(CarData):
 
         Levels are defined in *cardefaults.json*
         '''
+        logger.critical(f'{self.battery_level=} {type(self.battery_level)}')
+        logger.critical(f'{self.evsoc_limit_low=} {type(self.evsoc_limit_low)}')
         if self.battery_level < self.evsoc_limit_low:
             return self.evstart_power_low, self.evstop_power_low
         return self.evstart_power_high, self.evstop_power_high

@@ -22,7 +22,7 @@ import logging
 import os
 from datetime import datetime
 
-__version__ = '1.1.41'
+__version__ = '1.1.42'
 print(f'{__name__:40s} v{__version__}')
 
 def list_loggers(loggers):
@@ -65,7 +65,6 @@ loggers = [name for name in loggerDict if 'solar' in name]
 loggers.append('teslapy')
 skip_loggers = ['solar.teslaapi', 'solar']
 for logger_name in (set(loggers) - set(skip_loggers)):
-    print(logger_name)
     ilogger = loggerDict[logger_name]
     if isinstance(ilogger, logging.Logger):
         ilogger.setLevel(LOG_LEVEL)
