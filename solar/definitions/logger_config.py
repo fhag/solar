@@ -21,9 +21,8 @@ Created on Thu Nov  7 13:59:26 2019
 import logging
 import os
 from datetime import datetime
-# import teslapy
 
-__version__ = '1.1.40'
+__version__ = '1.1.41'
 print(f'{__name__:40s} v{__version__}')
 
 def list_loggers(loggers):
@@ -49,12 +48,15 @@ FILEHANDLER.setFormatter(FILE_FORMATTER)
 CONSOLE = logging.StreamHandler()
 CONSOLE.setLevel(LOG_LEVEL)
 CONSOLE_FORMATTER = logging.Formatter(
-    '%(asctime)s|%(name)-25s: %(levelname)-8s %(message)s')
+    '%(asctime)s|%(name)-28s:%(levelname)-8s|'
+    '%(funcName)25s|%(lineno)3d|%(message)s')
+CONSOLE_FORMATTER = FILE_FORMATTER  # fort testing
 CONSOLE.setFormatter(CONSOLE_FORMATTER)
 
 
-solarlogger = logging.getLogger('solar')
-logger = logging.getLogger(__name__)
+# solarlogger = logging.getLogger('solar')
+# logger = logging.getLogger(__name__)
+logger = logging.getLogger('solar')
 logger.warning('Logger test ohne Filehandler - kein Fehler')
 
 
@@ -67,9 +69,6 @@ for logger_name in (set(loggers) - set(skip_loggers)):
     ilogger = loggerDict[logger_name]
     if isinstance(ilogger, logging.Logger):
         ilogger.setLevel(LOG_LEVEL)
-        # handlers = loggerDict[logger_name].handlers
-        # for handler in handlers:
-        #     ilogger.removeHandler(handler)
         ilogger.handlers.clear()
         if logger_name not in skip_loggers:
             ilogger.addHandler(FILEHANDLER)
