@@ -51,7 +51,7 @@ except ModuleNotFoundError:
 
     access = AccessDummy()
 
-__version__ = '1.1.52'
+__version__ = '1.1.53'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -93,7 +93,7 @@ def send_status(msgstr: str, subject: str = None) -> str:
             msg['To'] = access.to_addrs
             resp = server.send_message(msg)
             assert resp == dict()
-            print(f'Mail successfully sent {msg!r}')
+            print(f'{time.asctime()!r} - Mail successfully sent {msg!r}')
             logger.info("Msg: '%s' successfully transmitted",
                         '|'.join(msgtxts).replace('\n', ''))
             return msgtxt
