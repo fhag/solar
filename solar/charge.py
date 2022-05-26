@@ -52,7 +52,7 @@ from .car import Car
 from .definitions.access_data import EMAIL, VIN, HOME
 from .send_status import send_status
 
-__version__ = '1.1.54'
+__version__ = '1.1.55'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -95,6 +95,11 @@ class ChargeEV(ChargeDefaults):
             fname = os.path.normpath(fname)
             with open(fname, 'rb') as file:
                 new_values = json.loads(file.read())
+            for key, value in new_values.items():
+                try:
+                    new_values[key] = int(new_values[key])
+                except ValueError:
+                    pass
             if new_values['__version__'] != self.defaults_version:
                 logger.info(str(new_values).replace(', ', '\n        '))
                 self.defaults_version = new_values['__version__']
