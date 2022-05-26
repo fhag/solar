@@ -100,8 +100,6 @@ class Car(CarData):
 
         Levels are defined in *cardefaults.json*
         '''
-        logger.critical(f'{self.battery_level} {type(self.battery_level)}')
-        logger.critical(f'{self.evsoc_limit_low} {type(self.evsoc_limit_low)}')
         if self.battery_level < self.evsoc_limit_low:
             return self.evstart_power_low, self.evstop_power_low
         return self.evstart_power_high, self.evstop_power_high
@@ -207,8 +205,9 @@ class Car(CarData):
             return False
         except Exception as err:
             ftext = f'Unexpected Exception due to={err} for {attempt!r}'
-            logger.critical('%s |%s', ftext, self, exc_info=True)
+            logger.error('%s |%s', ftext, self, exc_info=True)
             self.__dict__.update(dict(data_ok=False))
+            logger.warning('Continue operation without updating')
             return False
 
     def update_car_if(self) -> bool:
