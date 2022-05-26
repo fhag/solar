@@ -9,7 +9,7 @@ from collections import deque
 from datetime import datetime, timedelta
 from .access_data import HOME, E3DC_IP
 
-__version__ = '1.1.40'
+__version__ = '1.1.41'
 print(f'pvdataclasses.py v{__version__}')
 
 
@@ -25,7 +25,7 @@ class PVStatus():
     netz: int = 0
     akku: int = 0
     haus: int = 0
-    ok: bool = False
+    ok: bool = False  # reading data is ok
 
     def __post_init__(self):
         '''initialize PVStatus'''

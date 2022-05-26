@@ -52,7 +52,7 @@ from .car import Car
 from .definitions.access_data import EMAIL, VIN, HOME
 from .send_status import send_status
 
-__version__ = '1.1.53'
+__version__ = '1.1.54'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -68,23 +68,25 @@ class ChargeEV(ChargeDefaults):
         self.check_internet()
         self.send_status = send_status
         self.modbus = ChargeModbus()
-        if self.modbus.client.is_socket_open():
-            try:
-                self.car = Car(EMAIL, VIN, HOME)
-            except (AttributeError, Exception) as err:
-                logger.info('No connection to tesla car possible - '
-                            f'check credentials \n   --> [{err!r}]')
-            else:
-                msg = f'charge.py v{__version__} with \
-                car.py v{self.car.__version__} successfully started'
-                self.send_status(msg)
-                logger.info(msg)
-        else:
-            self.send_status(msgstr='Check local network - could not establish'
-                             ' connection  to E3DC - not responding!',
-                             subject='MODBUS ERROR - check network')
-            raise ConnectionError('No modbus connection')
-
+        try:
+            self.car = Car(EMAIL, VIN, HOME)
+        except (AttributeError, Exception) as err:
+            logger.info('No connection to tesla car possible - '
+                        f'check credentials \n   --> [{err!r}]')
+        self.state = self.get_new_values()
+        self.car.update_car()
+        msgs = [f'charge.py v{__version__} with '
+                f'car.py v{self.car.__version__} successfully started.']
+        ftext = 'Car connection to {!r} with VIN {!r} established at {}.'
+        name = self.car.display_name if self.car.display_name else 'n.a.'
+        vin = self.car. vin if self.car.vin else 'n.a.'
+        msgs.append(ftext.format(name, vin, datetime.now()))
+        ftext = 'E3DC connection to {!r} established at {}.'
+        msgs.append(ftext.format(self.modbus._tcp_ip, datetime.now()))
+        print(msgs)
+        msg = '\n'.join(msgs)
+        self.send_status(msg)
+        logger.info(msg)
 
     def _update_default_values(self) -> None:
         '''Read updated values if available'''
@@ -94,7 +96,7 @@ class ChargeEV(ChargeDefaults):
             with open(fname, 'rb') as file:
                 new_values = json.loads(file.read())
             if new_values['__version__'] != self.defaults_version:
-                logger.info(str(new_values).replace(', ','\n        '))
+                logger.info(str(new_values).replace(', ', '\n        '))
                 self.defaults_version = new_values['__version__']
             # update charge defaults
             charge_keys = set(self.__dict__.keys()) & set(new_values.keys())
@@ -164,7 +166,7 @@ class ChargeEV(ChargeDefaults):
                 ftext = 'E3DC Connection established to {} at {}'
                 ftext = ftext.format(self.modbus._tcp_ip, datetime.now())
                 logger.info(ftext)
-                self.send_status(ftext)
+                # self.send_status(ftext)
             self.e3dc_time_last_connection = time.time()
             return response
         except (Modbus_exceptions.ConnectionException, AttributeError):
