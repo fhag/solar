@@ -33,7 +33,7 @@ from .definitions.access_data import EMAIL, VIN, HOME
 # from .definitions.logger_config import LOG_LEVEL
 from .send_status import send_status
 
-__version__ = '1.1.54'
+__version__ = '1.1.55'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -100,8 +100,8 @@ class Car(CarData):
 
         Levels are defined in *cardefaults.json*
         '''
-        logger.critical(f'{self.battery_level=} {type(self.battery_level)}')
-        logger.critical(f'{self.evsoc_limit_low=} {type(self.evsoc_limit_low)}')
+        logger.critical(f'{self.battery_level} {type(self.battery_level)}')
+        logger.critical(f'{self.evsoc_limit_low} {type(self.evsoc_limit_low)}')
         if self.battery_level < self.evsoc_limit_low:
             return self.evstart_power_low, self.evstop_power_low
         return self.evstart_power_high, self.evstop_power_high
