@@ -26,7 +26,7 @@ import teslapy
 from .teslavehicle import Vehicle
 from ..send_status import send_status
 
-__version__ = '1.1.12'
+__version__ = '1.1.13'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -41,6 +41,7 @@ class TeslaApiClient(teslapy.Tesla):
     Class TeslaApiClient with authentification, get and post
     methods for access to Tesla API
     '''
+
     def __init__(self, email):
         super().__init__(email, retry=5, timeout=10)
         try:
@@ -54,15 +55,19 @@ class TeslaApiClient(teslapy.Tesla):
         '''Return a list of valid Vehicle instances'''
         return [Vehicle(v, self) for v in self.api('VEHICLE_LIST')['response']]
 
+
 class AuthenticationError(Exception):
     '''Critical error due to wrong credentials'''
+
     def __init__(self, error):
         logger.critical('AuthentificationError raised')
         super().__init__(
             'Authentication to the Tesla API failed: {}'.format(error))
 
+
 class ApiError(Exception):
     '''Error due to communication failure'''
+
     def __init__(self, error):
         logger.error('APIError raised')
         super().__init__('Tesla API call failed: {}'.format(error))

@@ -44,6 +44,7 @@ import urllib
 import json
 import time
 import logging
+from pathlib import Path
 from datetime import datetime
 from collections import namedtuple
 from .definitions.pvdataclasses import ChargeDefaults, PVStatus
@@ -52,7 +53,7 @@ from .car import Car
 from .definitions.access_data import EMAIL, VIN, HOME
 from .send_status import send_status
 
-__version__ = '1.1.55'
+__version__ = '1.1.56'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -64,6 +65,8 @@ class ChargeEV(ChargeDefaults):
     def __init__(self):
         super().__init__()
         self.__version__ = __version__
+        self.bufferpath = Path('./logs')
+        self.bufferminutes = 24 * 60
         self.defaults_version = ''
         self.check_internet()
         self.send_status = send_status
@@ -183,7 +186,10 @@ class ChargeEV(ChargeDefaults):
                     ftext = 'E3DC Connection to {} lost at {}'
                     ftext = ftext.format(self.modbus._tcp_ip, datetime.now())
                     logger.info(ftext)
-                    self.send_status(ftext)
+                    self.send_status(ftext,
+                                     bufferid='e3dc',
+                                     bufferpath=self.bufferpath,
+                                     bufferminutes=self.bufferminutes)
                     self.e3dc_time_last_connection = 0
             else:
                 logger.warning('E3DC Connection interruption of %s',
