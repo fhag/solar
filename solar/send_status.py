@@ -33,6 +33,9 @@ import smtplib
 import time
 import logging
 import socket
+import os
+from datetime import datetime
+from pathlib import Path
 from email.mime.text import MIMEText
 
 try:
@@ -40,6 +43,7 @@ try:
 except ModuleNotFoundError:
     class AccessDummy():
         '''Empty class with no access data'''
+
         def __init__(self):
             self.from_addr = ''
             self.from_password = ''
@@ -51,18 +55,25 @@ except ModuleNotFoundError:
 
     access = AccessDummy()
 
-__version__ = '1.1.53'
+__version__ = '1.1.54'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
 
+BUFFERPATH = './logs'
 
-def send_status(msgstr: str, subject: str = None) -> str:
+
+def send_status(msgstr: str,
+                subject: str = None,
+                bufferid: str = 'dummy',
+                bufferpath: Path = Path('.'),
+                bufferminutes: int = 0) -> str:
     '''
     send **msgstr** (with **subject**) to **to_addrs**
     '''
     if not access.smtp_server:
         return ''
+    # first check for internet connection and abort if no internet
     try:
         hname = socket.gethostname()
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -74,32 +85,90 @@ def send_status(msgstr: str, subject: str = None) -> str:
     except Exception as err:
         logger.error(err, exc_info=True)
         return ''
-    else:
-        msgtxts = list()
-        msgtxts.append(f'Mail from {hname} with IP {ipadr}\n')
-        msgtxts.append(f'{time.strftime("%A, %d. %B %Y")}\n')
-        msgtxts.append(f'{msgstr}')
-        msgtxts.append(f'\n{access.signature}')
-        msgtxt = '\n'.join(msgtxts)
-        if subject is None:
-            subject = f'Solar-Car-Charger : {time.ctime()}'
-        with smtplib.SMTP(access.smtp_server, access.port) as server:
-            server.ehlo()
-            server.starttls()
-            server.login(access.from_addr, access.from_password)
-            msg = MIMEText(msgtxt, 'plain')
-            msg['Subject'] = subject
-            msg['From'] = access.from_name
-            msg['To'] = access.to_addrs
-            resp = server.send_message(msg)
-            assert resp == dict()
-            print(f'{time.asctime()!r} - Mail successfully sent {msg!r}')
-            logger.info("Msg: '%s' successfully transmitted",
-                        '|'.join(msgtxts).replace('\n', ''))
-            return msgtxt
+    # prepare subject and msgtxt
+    date = time.strftime(
+        "%a, -%d. %B %Y %X").replace('-0', ' ').replace('-', '')
+    msgtxts = list()
+    msgtxts.append(f'Mail from {hname!r}: IP{ipadr!r}')
+    msgtxts.append(f'{date}')
+    msgtxts.append(f'{msgstr}')
+    msgtxts.append(f'{access.signature}')
+    msgtxt = ' |'.join(msgtxts)
+    if subject is None:
+        subject = f'Solar-Car-Charger : {time.ctime()}'
+    msg = MIMEText(msgtxt, 'plain')
+    msg['Subject'] = subject
+    msg['From'] = access.from_name
+    msg['To'] = access.to_addrs
+    fname = '---'
+    if bufferminutes > 0:
+        try:
+            os.listdir(bufferpath)
+        except FileNotFoundError:
+            print('no buffer path')
+        else:
+            fname = bufferpath.joinpath(f'Buffer-{bufferid}.txt')
+            print(f'{fname=} {bufferid=}')
+            buffertxt = msgtxt
+            # buffertxt = msgtxt.split('\n')
+            # buffertxt = ' |'.join([txt for txt in buffertxt if txt])
+            try:
+                with open(fname, 'r') as file:
+                    msgtxt = file.read()
+            except FileNotFoundError:
+                msgtxt = datetime.now().isoformat()
+            msgtxt += f'\n{buffertxt}'
+            startline = msgtxt.split('\n')[0]
+            starttime = datetime.fromisoformat(startline)
+            age = (datetime.now() - starttime).seconds
+            print(f'{age=:.4f}  {bufferminutes * 60=}')
+            if age > bufferminutes * 60:
+                # os.remove(fname)
+                with open(fname, 'w') as file:
+                    file.write(datetime.now().isoformat())
+            else:
+                with open(fname, 'w') as file:
+                    file.write(msgtxt)
+                return ''
+            print('*' * 100)
+    print('send_mail')
+    print(msgtxt)
+    print('-' * 100)
+    # send_mail(access, subject, msgtxt)
+    """
+    ------------------------------------------------------------------------
+    """
+    # return fname
+    return fname
+    # return msg, access, subject, msgtxt, fname
+
+
+def send_mail(access, subject, msgtxt):
+    '''Send mail via SMTP'''
+    if not access.smtp_server:
+        return ''
+    with smtplib.SMTP(access.smtp_server, access.port) as server:
+        server.ehlo()
+        server.starttls()
+        server.login(access.from_addr, access.from_password)
+        msg = MIMEText(msgtxt, 'plain')
+        msg['Subject'] = subject
+        msg['From'] = access.from_name
+        msg['To'] = access.to_addrs
+        resp = server.send_message(msg)
+        assert resp == dict()
+        print(f'{time.asctime()!r} - Mail successfully sent {msgtxt!r}')
+        msgtxt = msgtxt.replace('\n', ' |')
+        logger.info("Msg: '%s' successfully transmitted", msgtxt)
+        return msgtxt
 
 
 if __name__ == '__main__':
     MSGTXT = '''Dies ist eine Testnachricht.'''
-    response = send_status(MSGTXT)
+    print(MSGTXT)
+    # resp1 = send_status(MSGTXT)
+    response = send_status(MSGTXT,
+                           bufferid='112',
+                           bufferpath=Path('./logs'),
+                           bufferminutes=0.2)
     print(response)
