@@ -55,7 +55,7 @@ except ModuleNotFoundError:
 
     access = AccessDummy()
 
-__version__ = '1.1.54'
+__version__ = '1.1.55'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -100,7 +100,6 @@ def send_status(msgstr: str,
     msg['Subject'] = subject
     msg['From'] = access.from_name
     msg['To'] = access.to_addrs
-    fname = '---'
     if bufferminutes > 0:
         try:
             os.listdir(bufferpath)
@@ -108,20 +107,18 @@ def send_status(msgstr: str,
             print('no buffer path')
         else:
             fname = bufferpath.joinpath(f'Buffer-{bufferid}.txt')
-            print(f'{fname=} {bufferid=}')
+            # print(f'{fname=} {bufferid=}')
             buffertxt = msgtxt
-            # buffertxt = msgtxt.split('\n')
-            # buffertxt = ' |'.join([txt for txt in buffertxt if txt])
             try:
                 with open(fname, 'r') as file:
                     msgtxt = file.read()
             except FileNotFoundError:
                 msgtxt = datetime.now().isoformat()
-            msgtxt += f'\n{buffertxt}'
+            msgtxt = f'{msgtxt}\n{buffertxt}'
             startline = msgtxt.split('\n')[0]
             starttime = datetime.fromisoformat(startline)
             age = (datetime.now() - starttime).seconds
-            print(f'{age=:.4f}  {bufferminutes * 60=}')
+            # print(f'{age=:.4f}  {bufferminutes * 60=}')
             if age > bufferminutes * 60:
                 # os.remove(fname)
                 with open(fname, 'w') as file:
@@ -130,17 +127,7 @@ def send_status(msgstr: str,
                 with open(fname, 'w') as file:
                     file.write(msgtxt)
                 return ''
-            print('*' * 100)
-    print('send_mail')
-    print(msgtxt)
-    print('-' * 100)
-    # send_mail(access, subject, msgtxt)
-    """
-    ------------------------------------------------------------------------
-    """
-    # return fname
-    return fname
-    # return msg, access, subject, msgtxt, fname
+    return send_mail(access, subject, msgtxt)
 
 
 def send_mail(access, subject, msgtxt):
@@ -158,7 +145,6 @@ def send_mail(access, subject, msgtxt):
         resp = server.send_message(msg)
         assert resp == dict()
         print(f'{time.asctime()!r} - Mail successfully sent {msgtxt!r}')
-        msgtxt = msgtxt.replace('\n', ' |')
         logger.info("Msg: '%s' successfully transmitted", msgtxt)
         return msgtxt
 
