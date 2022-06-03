@@ -53,7 +53,7 @@ from .car import Car
 from .definitions.access_data import EMAIL, VIN, HOME
 from .send_status import send_status
 
-__version__ = '1.1.56'
+__version__ = '1.1.57'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -244,6 +244,7 @@ class ChargeEV(ChargeDefaults):
             except (AssertionError):
                 logger.warning(
                     'Internet connection established after %.0f sec', i)
+                time.sleep(2)
                 return True
             except (urllib.error.URLError, urllib.error.HTTPError):
                 logger.debug('Connection Error after %.0f seconds', i)

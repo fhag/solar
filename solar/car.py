@@ -33,7 +33,7 @@ from .definitions.access_data import EMAIL, VIN, HOME
 # from .definitions.logger_config import LOG_LEVEL
 from .send_status import send_status
 
-__version__ = '1.1.55'
+__version__ = '1.1.57'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -286,7 +286,7 @@ class Car(CarData):
             self.charging_flag = (line.split(';')[1] == 'True')
             self.last_charge_limit_soc = int(line.split(';')[2])
         except (PermissionError, FileNotFoundError) as err:
-            ftext = f'File does not exist {self.fname_charging_status!r}'
+            ftext = f'{self.fname_charging_status!r} does not exist {err!r}'
             logger.info(ftext, exc_info=False)
             self.send_status(ftext)
 
@@ -381,4 +381,4 @@ class Car(CarData):
 
 
 if __name__ == '__main__':
-    car = Car(EMAIL, PW, VIN, HOME)
+    car = Car(EMAIL, VIN, HOME)
