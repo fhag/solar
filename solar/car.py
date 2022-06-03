@@ -30,10 +30,9 @@ from requests.exceptions import HTTPError, ConnectionError
 from .teslaapi import TeslaApiClient, AuthenticationError, ApiError
 from .definitions.pvdataclasses import CarData
 from .definitions.access_data import EMAIL, VIN, HOME
-# from .definitions.logger_config import LOG_LEVEL
 from .send_status import send_status
 
-__version__ = '1.1.58'
+__version__ = '1.1.59'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -165,25 +164,14 @@ class Car(CarData):
             logger.error(ftext)
             return False
 
-    # def _try_wake_up(self) -> dict:
-    #     '''wake up car until car online'''
-    #     for i in range(self.ev_trials):
-    #         response = self.func.wake_up()
-    #         logger.warning(response)
-    #         if response['state'].upper() != 'ASLEEP':
-    #             return response
-    #         time.sleep(self.sleep_between_func)
-    #     ftext = f'Could not wake up car: {response}'
-    #     logger.warning(ftext)
-    #     return dict()
-
     def update_car(self) -> bool:
         '''Update car instance with all car data and timestamp'''
         timestamps = list()
         try:
-            assert hasattr(self, 'func'), 'no func attribute'
+            assert hasattr(self, 'func'), 'func method is missing'
         except AssertionError as err:
-            if err == 'no func attribute':
+            if err == 'func method is missing':
+                logger.warning(f'car {err} - calling self._get_func()')
                 self.func = self._get_func(self.email, self.vin)
             else:
                 raise
