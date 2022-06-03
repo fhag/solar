@@ -161,7 +161,8 @@ def test_update_car(car):
     car.func.get_drive_state = types.MethodType(lambda self: resp, car.func)
     car.func.get_climate_state = types.MethodType(lambda self: resp, car.func)
     car.func.get_vehicle_state = types.MethodType(lambda self: resp, car.func)
-    car.func.get_vehicle_summary = types.MethodType(lambda self: resp, car.func)
+    car.func.get_vehicle_summary = types.MethodType(
+        lambda self: resp, car.func)
     assert car.update_car()
 
     def raise_exception():

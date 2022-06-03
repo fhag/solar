@@ -6,6 +6,7 @@ import types
 import numpy as np
 import shutil
 import time
+from pathlib import Path
 from ..car import Car
 from ..car import __version__ as carversion
 from ..charge import ChargeEV
@@ -101,6 +102,8 @@ def ev(car):
     ChargeEV.__init__ = lambda *args, **kwargs: None
     ChargeEV.send_status = lambda *args, **kwargs: None
     ev = ChargeEV()
+    ev.bufferpath = Path('.')
+    ev.bufferminutes = 24 * 60
     ev.modbus = ChargeModbus()
     ev.car = car
     yield ev

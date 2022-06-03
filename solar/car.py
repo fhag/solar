@@ -33,7 +33,7 @@ from .definitions.access_data import EMAIL, VIN, HOME
 # from .definitions.logger_config import LOG_LEVEL
 from .send_status import send_status
 
-__version__ = '1.1.57'
+__version__ = '1.1.58'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -52,11 +52,11 @@ class Car(CarData):
         super().__init__(home)
         self.__version__ = __version__
         self.data = None
+        self.email = email
+        self.vin = vin
         logger.info('%s  v%s', __name__, __version__)
         try:
-            self.client = TeslaApiClient(email)
-            self.vehicles = self.client.list_vehicles()
-            self.func = [v for v in self.vehicles if v.vin == vin][0]
+            self.func = self._get_func(email=email, vin=vin)
             self.send_status = send_status
             self._get_charging_status()
         except IndexError:
@@ -70,6 +70,13 @@ class Car(CarData):
             ftext = f' Car v{__version__} for {vin} initialized and started '
             print(ftext.center(100, '-'))
             logger.info(ftext)
+
+    def _get_func(self, email, vin):
+        '''Get func for car API'''
+        self.client = TeslaApiClient(email)
+        self.vehicles = self.client.list_vehicles()
+        func = [v for v in self.vehicles if v.vin == vin][0]
+        return func
 
     def _km_from_home(self) -> float:
         """
@@ -174,6 +181,13 @@ class Car(CarData):
         '''Update car instance with all car data and timestamp'''
         timestamps = list()
         try:
+            assert hasattr(self, 'func'), 'no func attribute'
+        except AssertionError as err:
+            if err == 'no func attribute':
+                self.func = self._get_func(self.email, self.vin)
+            else:
+                raise
+        try:
             attempt = 'func.wake_up'
             self.func.wake_up()
             attempt = 'get_vehicle_summary'
@@ -203,6 +217,9 @@ class Car(CarData):
             logger.warning('%s \n%s', ftext, self)
             self.__dict__.update(dict(data_ok=False))
             return False
+        except AssertionError:
+            pass
+            raise
         except Exception as err:
             ftext = f'Unexpected Exception due to={err} for {attempt!r}'
             logger.error('%s |%s', ftext, self, exc_info=True)

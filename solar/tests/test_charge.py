@@ -45,7 +45,7 @@ def test__update_default_values(tmp_dir, ev):
     ev.soc_minimum_stop = 6
     ev.car.evsoc_std = 77
     jdata = {"soc_minimum_start": 22, "soc_minimum_stop": 7,
-             "evsoc_std": 65, "__version__" : "2.2.2"}
+             "evsoc_std": 65, "__version__": "2.2.2"}
     with open(fname, 'w') as file:
         file.write(json.dumps(jdata))
     ev.defaults_version = '1.1.1'
