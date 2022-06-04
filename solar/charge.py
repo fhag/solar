@@ -244,7 +244,6 @@ class ChargeEV(ChargeDefaults):
             except (AssertionError):
                 logger.warning(
                     'Internet connection established after %.0f sec', i)
-                time.sleep(2)
                 return True
             except (urllib.error.URLError, urllib.error.HTTPError):
                 logger.debug('Connection Error after %.0f seconds', i)

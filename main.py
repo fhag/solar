@@ -20,6 +20,6 @@ print(f'{__name__:40s} v{__version__}')
 
 if __name__ == '__main__':
     ev = ChargeEV()
-    ev.run()
+    # ev.run()
     logger.warning(f'Main program terminated at {time.asctime()}')
     logger.warning('=' * 100)

@@ -42,7 +42,7 @@ def tmp_dir():
 
 @pytest.fixture(scope='function')
 def car():
-    ''' temp ChargeEV instance'''
+    ''' temp ChargeEV instance without func'''
     class Test_func():
         ts = [{'timestamp': i*1000} for i in range(1, 15)]
         bool_charge_limit = True
@@ -85,8 +85,57 @@ def car():
     car.charge_limit_soc_min, car.charge_limit_soc_max = 50, 100
     car.fname_charging_status = 'data/temp.csv'
     car.send_status = lambda x: True
-#    from send_status import send_status
-#    car.send_status = send_status
+    yield car
+    Car.__init__ = actual_init
+
+
+@pytest.fixture(scope='function')
+def car_wo_func():
+    ''' temp ChargeEV instance without func'''
+    # class Test_func():
+    #     ts = [{'timestamp': i*1000} for i in range(1, 15)]
+    #     bool_charge_limit = True
+    #     response_start_charging = dict(result=True, reason='alles ok')
+    #     response_stop_charging = dict(result=True, reason='alles ok')
+    #     response_set_charge_limit = dict(result=True, reason='alles ok')
+
+    #     def wake_up(self):
+    #         return dict(state='online')
+
+    #     def get_charge_state(self):
+    #         return self.ts.pop(0)
+
+    #     def get_drive_state(self):
+    #         return self.ts.pop(0)
+
+    #     def get_climate_state(self):
+    #         return self.ts.pop(0)
+
+    #     def get_vehicle_state(self):
+    #         return self.ts.pop(0)
+
+    #     def set_charge_limit(self, climit):
+    #         self.charge_limit_soc = climit
+    #         return self.response_set_charge_limit
+
+    #     def start_charging(self):
+    #         return self.response_start_charging
+
+    #     def stop_charging(self):
+    #         return self.response_stop_charging
+    actual_init = Car.__init__
+    Car.__init__ = lambda *args, **kwargs: None
+    # func = Test_func()
+    # Car.func = func
+    car = Car(EMAIL, PW, VIN, HOME)
+    car.home = HOME
+    car.email = 'test'
+    car.vin = '123'
+    car.latitude, car.longitude = HOME
+    car.update_values = types.MethodType(lambda *args, **kwargs: True, car)
+    car.charge_limit_soc_min, car.charge_limit_soc_max = 50, 100
+    car.fname_charging_status = 'data/temp.csv'
+    car.send_status = lambda x: True
     yield car
     Car.__init__ = actual_init
 

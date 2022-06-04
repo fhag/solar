@@ -31,6 +31,8 @@ run_test_nyi = pytest.mark.skipif(True, reason='test not yet implemented')
 # pytest --cov=solar --cov-report html solar/tests/
 
 # -----------------------------------------------------------------------------
+
+
 @run_test_switch
 def test__km_from_home(car):
     car.latitude, car.longitude = HOME
@@ -142,14 +144,26 @@ def test__try_set_charge_limit(car):
     assert car._try_set_charge_limit(77) is False
 
 
-# @run_test_switch
-# def test__try_wake_up(car):
-#     response = dict(state='online')
-#     car.func.wake_up = types.MethodType(lambda self: response, car.func)
-#     car.sleep_between_func = 0.01
-#     assert car._try_wake_up()
-#     response = dict(state='asleep')
-#     assert not car._try_wake_up()
+@run_test_nyi
+def test__get_func(car):
+    print('cannot be tested')
+
+
+@run_test_nyi
+def test__update_car_missing_func(car_wo_func):
+
+    def func(*args, **kwargs):
+        '''dummy function'''
+        print('dummy function')
+        return 12
+
+    car_wo_func._get_func = types.MethodType(lambda self, email, vin: func, car_wo_func._get_func)
+    breakpoint()
+    assert 0
+
+    car_wo_func.update_car()
+    breakpoint()
+    assert 0
 
 
 @run_test_switch
