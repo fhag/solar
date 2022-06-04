@@ -32,7 +32,7 @@ from .definitions.pvdataclasses import CarData
 from .definitions.access_data import EMAIL, VIN, HOME
 from .send_status import send_status
 
-__version__ = '1.1.59'
+__version__ = '1.1.60'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -170,7 +170,7 @@ class Car(CarData):
         try:
             assert hasattr(self, 'func'), 'func method is missing'
         except AssertionError as err:
-            if err == 'func method is missing':
+            if str(err) == 'func method is missing':
                 logger.warning(f'car {err} - calling self._get_func()')
                 self.func = self._get_func(self.email, self.vin)
             else:
