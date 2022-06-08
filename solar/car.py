@@ -32,7 +32,7 @@ from .definitions.pvdataclasses import CarData
 from .definitions.access_data import EMAIL, VIN, HOME
 from .send_status import send_status
 
-__version__ = '1.1.60'
+__version__ = '1.1.61'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -47,12 +47,13 @@ class Car(CarData):
     * home = (latitude, longitude) of car's home location
     '''
 
-    def __init__(self, email, vin, home):
+    def __init__(self, email, vin, home, access=None):
         super().__init__(home)
         self.__version__ = __version__
         self.data = None
         self.email = email
         self.vin = vin
+        self.access = access
         logger.info('%s  v%s', __name__, __version__)
         try:
             self.func = self._get_func(email=email, vin=vin)
@@ -61,10 +62,10 @@ class Car(CarData):
         except IndexError:
             ftext = 'Unknown car with VIN:%s' % vin
             logger.critical(ftext)
-            send_status(ftext)
+            send_status(msgstr=ftext, access=access)
         except (AuthenticationError, ConnectionError) as err:
             logger.critical(err)
-            send_status(err)
+            send_status(msgstr=err, access=self.access)
         else:
             ftext = f' Car v{__version__} for {vin} initialized and started '
             print(ftext.center(100, '-'))
@@ -275,7 +276,7 @@ class Car(CarData):
         except (PermissionError, Exception) as err:
             ftext = f'Could not save charging_status: {err}'
             logger.error(ftext, exc_info=True)
-            self.send_status(ftext)
+            self.send_status(msgstr=ftext, access=self.access)
 
     def _get_charging_status(self):
         '''get charging_flag status from file'''
@@ -293,7 +294,7 @@ class Car(CarData):
         except (PermissionError, FileNotFoundError) as err:
             ftext = f'{self.fname_charging_status!r} does not exist {err!r}'
             logger.info(ftext, exc_info=False)
-            self.send_status(ftext)
+            self.send_status(msgstr=ftext, access=self.access)
 
     def _start_car_charging(self) -> bool:
         '''start charging car with exception handling'''
@@ -315,7 +316,7 @@ class Car(CarData):
             return False
         except AuthenticationError as err:
             msg = '\n{}\n\nself._start_car_charging in car.py v{}'
-            self.send_status(msg.format(err, __version__))
+            self.send_status(msgstr=msg.format(err, __version__))
             logger.critical(err, exc_info=False)
             raise AuthenticationError('Please check credentials for car login')
         else:
@@ -341,7 +342,8 @@ class Car(CarData):
             return False
         except AuthenticationError as err:
             msg = '\n{}\n\nself._start_car_charging in car.py v{}'
-            self.send_status(msg.format(err, __version__))
+            self.send_status(msgstr=msg.format(err, __version__),
+                             access=self.access)
             logger.critical(err, exc_info=False)
             raise AuthenticationError('Please check credentials for car login')
         else:

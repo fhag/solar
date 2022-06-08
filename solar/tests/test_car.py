@@ -11,13 +11,13 @@ import copy
 import logging
 import os
 import stat
-from ..teslaapi import AuthenticationError, ApiError
+from ..teslaapi import ApiError
 from .conftest import logger, HOME, carversion
 
 # pytest -v -rs tests/test_charge.py
 # pytest --cov-report html:cov_html --cov=arequests tests/test_charge.py
 
-__version__ = '0.1.70'
+__version__ = '0.1.71'
 
 print(f'Running test_car.py v{__version__}')
 logger.info(f'Running test_car.py v{__version__}')
@@ -66,7 +66,7 @@ def test__charging_needed(car):
 @run_test_switch
 def test__get_charging_status(tmp_dir, car):
     car = copy.deepcopy(car)
-    car.send_status = types.MethodType(lambda self, x: x, car)
+    car.send_status = types.MethodType(lambda self, **kwargs: kwargs, car)
     car.fname_charging_status = 'test2.csv'
     car._get_charging_status()
 
@@ -225,7 +225,7 @@ def test__get_new_soc_limit(car):
 @run_test_switch
 def test__save_and_get_charging_status(tmp_dir, car):
     car = copy.deepcopy(car)
-    car.send_status = types.MethodType(lambda self, x: x, car)
+    car.send_status = types.MethodType(lambda self, **kwargs: kwargs, car)
     car.fname_charging_status = 'test.csv'
     car.charging_flag, car.last_charge_limit_soc = True, 60
     car._save_charging_status()

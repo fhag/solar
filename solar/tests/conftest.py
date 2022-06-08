@@ -84,7 +84,8 @@ def car():
     car.update_values = types.MethodType(lambda *args, **kwargs: True, car)
     car.charge_limit_soc_min, car.charge_limit_soc_max = 50, 100
     car.fname_charging_status = 'data/temp.csv'
-    car.send_status = lambda x: True
+    car.send_status = lambda *args, **kwargs: True
+    car.access = 'test'
     yield car
     Car.__init__ = actual_init
 
@@ -154,5 +155,6 @@ def ev(car):
     ev.bufferpath = Path('.')
     ev.bufferminutes = 24 * 60
     ev.modbus = ChargeModbus()
+    ev.access = 'test'
     ev.car = car
     yield ev
