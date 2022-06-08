@@ -35,27 +35,29 @@ import logging
 import socket
 import os
 from datetime import datetime
+from dataclasses import dataclass
 from pathlib import Path
-from email.mime.text import MIMEText
+from email.message import EmailMessage
 
 try:
-    import solar.definitions.send_status_access as access
+    from solar.definitions.send_status_access import Access
+    access = Access()
 except ModuleNotFoundError:
+    @dataclass
     class AccessDummy():
         '''Empty class with no access data'''
-
-        def __init__(self):
-            self.from_addr = ''
-            self.from_password = ''
-            self.from_name = ''
-            self.to_addrs = ''
-            self.smtp_server = ''
-            self.port = 0
-            self.from_password = ''
+        from_addr: str = ''
+        from_name: str = ''
+        from_password: str = ''
+        to_addrs: str = ''
+        signature: str = ''
+        # port and servername depending on mail server
+        port: int = 0
+        smtp_server: str = ''
 
     access = AccessDummy()
 
-__version__ = '1.1.55'
+__version__ = '1.1.56'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -67,11 +69,13 @@ def send_status(msgstr: str,
                 subject: str = None,
                 bufferid: str = 'dummy',
                 bufferpath: Path = Path('.'),
-                bufferminutes: int = 0) -> str:
+                bufferminutes: int = 0,
+                access: dataclass = None) -> str:
     '''
     send **msgstr** (with **subject**) to **to_addrs**
     '''
-    if not access.smtp_server:
+    if not hasattr(access, 'smtp_server'):
+        logger.error('Missing access data for sending mails')
         return ''
     # first check for internet connection and abort if no internet
     try:
@@ -96,10 +100,6 @@ def send_status(msgstr: str,
     msgtxt = ' |'.join(msgtxts)
     if subject is None:
         subject = f'Solar-Car-Charger : {time.ctime()}'
-    msg = MIMEText(msgtxt, 'plain')
-    msg['Subject'] = subject
-    msg['From'] = access.from_name
-    msg['To'] = access.to_addrs
     if bufferminutes > 0:
         try:
             os.listdir(bufferpath)
@@ -118,9 +118,8 @@ def send_status(msgstr: str,
             startline = msgtxt.split('\n')[0]
             starttime = datetime.fromisoformat(startline)
             age = (datetime.now() - starttime).seconds
-            # print(f'{age=:.4f}  {bufferminutes * 60=}')
+            # print(f'{age=}  {starttime} {datetime.now()}')
             if age > bufferminutes * 60:
-                # os.remove(fname)
                 with open(fname, 'w') as file:
                     file.write(datetime.now().isoformat())
             else:
@@ -132,29 +131,62 @@ def send_status(msgstr: str,
 
 def send_mail(access, subject, msgtxt):
     '''Send mail via SMTP'''
-    if not access.smtp_server:
+    if not hasattr(access, 'smtp_server'):
         return ''
-    with smtplib.SMTP(access.smtp_server, access.port) as server:
-        server.ehlo()
-        server.starttls()
-        server.login(access.from_addr, access.from_password)
-        msg = MIMEText(msgtxt, 'plain')
-        msg['Subject'] = subject
-        msg['From'] = access.from_name
-        msg['To'] = access.to_addrs
-        resp = server.send_message(msg)
-        assert resp == dict()
-        print(f'{time.asctime()!r} - Mail successfully sent {msgtxt!r}')
-        logger.info("Msg: '%s' successfully transmitted", msgtxt)
-        return msgtxt
+    try:
+        with smtplib.SMTP(access.smtp_server, access.port) as server:
+            server.ehlo()
+            server.starttls()
+            server.ehlo()
+            server.login(access.from_addr, access.from_password)
+            msg = EmailMessage()
+            msg.set_content(msgtxt)
+            msg['Subject'] = subject
+            msg['From'] = access.from_name
+            msg['To'] = access.to_addrs
+            resp = server.send_message(msg)
+            assert resp == dict()
+            print(f'{time.asctime()!r} - Mail successfully sent {msgtxt!r}')
+            logger.info("Msg: '%s' successfully transmitted", msgtxt)
+            return msgtxt
+    except (AssertionError, Exception) as err:
+        logger.error(f'Mail not sent: {str(err)!r}')
+        return ''
 
 
 if __name__ == '__main__':
-    MSGTXT = '''Dies ist eine Testnachricht.'''
-    print(MSGTXT)
-    # resp1 = send_status(MSGTXT)
-    response = send_status(MSGTXT,
-                           bufferid='112',
-                           bufferpath=Path('./logs'),
-                           bufferminutes=0.2)
-    print(response)
+    # test ohne buffer
+    MSGTXT = '''Dies ist eine Testnachricht ohne Buffer.'''
+    resp1 = send_status(MSGTXT, access=access)
+    # test send_status with buffer
+    b_path = Path('./logs')
+    b_id = '112'
+    fname = b_path.joinpath(f'Buffer-{b_id}.txt')
+    try:
+        os.remove(fname)
+    except FileNotFoundError:
+        print('No buffer file deletet')
+    bufferminutes = 0.03
+    MSGTXT = '{:3.0f}. Testnachricht mit Buffer {:4.3f} sec'
+    stime = time.time()
+    ntimes = 4
+    for i in range(ntimes):
+        msgtxt = MSGTXT.format(i, time.time() - stime)
+        response = send_status(msgtxt,
+                               access=access,
+                               bufferid=b_id,
+                               bufferpath=b_path,
+                               bufferminutes=bufferminutes)
+        time.sleep(bufferminutes * 60 / ntimes)
+    time.sleep(bufferminutes * 60 / ntimes)
+    msgtxt = MSGTXT.format(i + 1, time.time() - stime)
+    response = send_status(msgtxt,
+                           access=access,
+                           bufferid=b_id,
+                           bufferpath=b_path,
+                           bufferminutes=0.025)
+
+    # try:
+    #     os.remove(fname)
+    # except FileNotFoundError:
+    #     print('No buffer file deletet')
