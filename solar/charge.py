@@ -53,7 +53,7 @@ from .car import Car
 from .definitions.access_data import EMAIL, VIN, HOME
 from .send_status import send_status
 
-__version__ = '1.1.57'
+__version__ = '1.1.58'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -62,8 +62,9 @@ logger = logging.getLogger(__name__)
 class ChargeEV(ChargeDefaults):
     '''class for charging with PV power'''
 
-    def __init__(self):
+    def __init__(self, access=None):
         super().__init__()
+        self.access = access
         self.__version__ = __version__
         self.bufferpath = Path('./logs')
         self.bufferminutes = 24 * 60
@@ -88,7 +89,7 @@ class ChargeEV(ChargeDefaults):
         msgs.append(ftext.format(self.modbus._tcp_ip, datetime.now()))
         print(msgs)
         msg = '\n'.join(msgs)
-        self.send_status(msg)
+        self.send_status(msgstr=msg, access=self.access)
         logger.info(msg)
 
     def _update_default_values(self) -> None:
@@ -174,7 +175,6 @@ class ChargeEV(ChargeDefaults):
                 ftext = 'E3DC Connection established to {} at {}'
                 ftext = ftext.format(self.modbus._tcp_ip, datetime.now())
                 logger.info(ftext)
-                # self.send_status(ftext)
             self.e3dc_time_last_connection = time.time()
             return response
         except (Modbus_exceptions.ConnectionException, AttributeError):
@@ -186,7 +186,8 @@ class ChargeEV(ChargeDefaults):
                     ftext = 'E3DC Connection to {} lost at {}'
                     ftext = ftext.format(self.modbus._tcp_ip, datetime.now())
                     logger.info(ftext)
-                    self.send_status(ftext,
+                    self.send_status(msgstr=ftext,
+                                     access=self.access,
                                      bufferid='e3dc',
                                      bufferpath=self.bufferpath,
                                      bufferminutes=self.bufferminutes)
@@ -227,7 +228,7 @@ class ChargeEV(ChargeDefaults):
         except (PermissionError, Exception) as err:
             ftext = f'Could not save data: {err}'
             logger.warning(ftext, exc_info=True)
-            self.send_status(ftext)
+            self.send_status(msgstr=ftext, access=self.access)
 
     def check_internet(self, sleeptime=1, www='https://www.google.com'):
         '''
