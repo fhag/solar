@@ -32,7 +32,7 @@ from .definitions.pvdataclasses import CarData
 from .definitions.access_data import EMAIL, VIN, HOME
 from .send_status import send_status
 
-__version__ = '1.1.61'
+__version__ = '1.1.62'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
@@ -54,28 +54,37 @@ class Car(CarData):
         self.email = email
         self.vin = vin
         self.access = access
+        self.timestamp = 0
         logger.info('%s  v%s', __name__, __version__)
-        try:
-            self.func = self._get_func(email=email, vin=vin)
-            self.send_status = send_status
-            self._get_charging_status()
-        except IndexError:
-            ftext = 'Unknown car with VIN:%s' % vin
-            logger.critical(ftext)
-            send_status(msgstr=ftext, access=access)
-        except (AuthenticationError, ConnectionError) as err:
-            logger.critical(err)
-            send_status(msgstr=err, access=self.access)
+        self.send_status = send_status
+        self.func = self._get_func()
+        # except (AuthenticationError, ConnectionError) as err:
+        #     logger.critical(err)
+        #     send_status(msgstr=err, access=self.access)
+        self._get_charging_status()
+        ftext = f'Car v{__version__} initialized:'
+        if self.func is None:
+            ftext = f'{ftext} could not establish connection to car'
         else:
-            ftext = f' Car v{__version__} for {vin} initialized and started '
-            print(ftext.center(100, '-'))
-            logger.info(ftext)
+            ftext = f'{ftext} VIN {vin!r} connected'
+        print(f' {ftext} '.center(100, '-'))
+        logger.info(ftext)
 
-    def _get_func(self, email, vin):
+    def _get_func(self):
         '''Get func for car API'''
-        self.client = TeslaApiClient(email)
-        self.vehicles = self.client.list_vehicles()
-        func = [v for v in self.vehicles if v.vin == vin][0]
+        func = None
+        try:
+            self.client = TeslaApiClient(self.email)
+            self.vehicles = self.client.list_vehicles()
+            func = [v for v in self.vehicles if v.vin == self.vin][0]
+        except (ConnectionError, AuthenticationError) as err:
+            ftext = f'no func: could not establish func due to {err}'
+            logger.error(ftext)
+            send_status(msgstr=ftext, access=self.access)
+        except IndexError:
+            ftext = 'no func: Unknown car with VIN:%s' % self.vin
+            logger.critical(ftext)
+            send_status(msgstr=ftext, access=self.access)
         return func
 
     def _km_from_home(self) -> float:
@@ -117,6 +126,9 @@ class Car(CarData):
 
     def _try_start_charging(self) -> bool:
         '''start_until car online'''
+        if self.func is None:
+            self.func = self._get_func()
+            return False
         for _ in range(self.ev_trials):
             response = self.func.start_charging()
             if response['result'] or response['reason'] == 'charging':
@@ -128,6 +140,9 @@ class Car(CarData):
 
     def _try_stop_charging(self) -> bool:
         '''stop_charging until car online'''
+        if self.func is None:
+            self.func = self._get_func()
+            return False
         for _ in range(self.ev_trials):
             response = self.func.stop_charging()
             if response['result'] or response['reason'] == 'not_charging':
@@ -139,6 +154,9 @@ class Car(CarData):
 
     def _try_set_charge_limit(self, charge_limit):
         '''remember old limit and set new limit with exception handling'''
+        if self.func is None:
+            self.func = self._get_func()
+            return False
         try:
             _charge_limit = int(float(charge_limit))
         except ValueError:
@@ -167,15 +185,10 @@ class Car(CarData):
 
     def update_car(self) -> bool:
         '''Update car instance with all car data and timestamp'''
+        if self.func is None:
+            self.func = self._get_func()
+            return False
         timestamps = list()
-        try:
-            assert hasattr(self, 'func'), 'func method is missing'
-        except AssertionError as err:
-            if str(err) == 'func method is missing':
-                logger.warning(f'car {err} - calling self._get_func()')
-                self.func = self._get_func(self.email, self.vin)
-            else:
-                raise
         try:
             attempt = 'func.wake_up'
             self.func.wake_up()
@@ -207,7 +220,6 @@ class Car(CarData):
             self.__dict__.update(dict(data_ok=False))
             return False
         except AssertionError:
-            pass
             raise
         except Exception as err:
             ftext = f'Unexpected Exception due to={err} for {attempt!r}'
@@ -318,7 +330,8 @@ class Car(CarData):
             msg = '\n{}\n\nself._start_car_charging in car.py v{}'
             self.send_status(msgstr=msg.format(err, __version__))
             logger.critical(err, exc_info=False)
-            raise AuthenticationError('Please check credentials for car login')
+            emsg = 'Please check credentials for car login'
+            raise AuthenticationError(emsg) from err
         else:
             logger.error('Assertion: unable to start charging')
             return False
@@ -345,7 +358,7 @@ class Car(CarData):
             self.send_status(msgstr=msg.format(err, __version__),
                              access=self.access)
             logger.critical(err, exc_info=False)
-            raise AuthenticationError('Please check credentials for car login')
+            raise AuthenticationError('Please check credentials for car login'  )
         else:
             logger.error('Unable or unnecessary to stop car_charging')
             return False
