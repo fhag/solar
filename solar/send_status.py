@@ -43,6 +43,7 @@ try:
     from solar.definitions.send_status_access import Access
     access = Access()
 except ModuleNotFoundError:
+    print('Dummy access data')
     @dataclass
     class AccessDummy():
         '''Empty class with no access data'''
@@ -57,7 +58,7 @@ except ModuleNotFoundError:
 
     access = AccessDummy()
 
-__version__ = '1.1.56'
+__version__ = '1.1.57'
 print(f'{__name__:40s} v{__version__}')
 
 logger = logging.getLogger(__name__)
