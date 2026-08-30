@@ -1,3 +1,5 @@
+
+
 # **solar** - EV car charging with solar power
 
 ### Charge your car with solar power
@@ -6,6 +8,6 @@ The purpose of this application is to maximise electric vehicle (EV) charging wi
 
 The application runs on a Raspberry Pi 3 Model B with Python 3.7.3, and uses the modbus API of E3DC and the unofficial Tesla API.
 
-The documentation shows how it works and how to configure the application.
+The documentation shows how it works and how to configure the application. Before running, copy `solar/definitions/access_data_copy.py` to `solar/definitions/access_data.py` and update its access data.
 
 [Full documentation](https://fhag.github.io/solar/docs/html/index.html "detailed solar documentation")
